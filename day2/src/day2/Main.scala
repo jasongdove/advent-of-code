@@ -1,19 +1,23 @@
 import cats.effect._
 
-abstract class PasswordWithPolicy {
-  def isValid: Boolean
+abstract class PasswordPolicy {
+  def isValid(password: String): Boolean
 }
 
-case class PasswordWithPolicyOne(min: Int, max: Int, letter: Char, password: String) extends PasswordWithPolicy {
-  def isValid: Boolean = {
+case class PasswordPolicyOne(min: Int, max: Int, letter: Char) extends PasswordPolicy {
+  override def isValid(password: String): Boolean = {
     val count = password.count(c => c == letter)
     count >= min && count <= max
   }
 }
 
-case class PasswordWithPolicyTwo(first: Int, second: Int, letter: Char, password: String) extends PasswordWithPolicy {
-  def isValid: Boolean =
+case class PasswordPolicyTwo(first: Int, second: Int, letter: Char) extends PasswordPolicy {
+  override def isValid(password: String): Boolean =
     password(first - 1) == letter ^ password(second - 1) == letter
+}
+
+case class PasswordWithPolicy(password: String, policy: PasswordPolicy) {
+  def isValid: Boolean = policy.isValid(password)
 }
 
 object PasswordWithPolicy {
@@ -21,12 +25,14 @@ object PasswordWithPolicy {
 
   def one(input: String) = {
     val pattern(min, max, letter, password) = input
-    new PasswordWithPolicyOne(min.toInt, max.toInt, letter.head, password)
+    val policy = PasswordPolicyOne(min.toInt, max.toInt, letter.head)
+    new PasswordWithPolicy(password, policy)
   }
 
   def two(input: String) = {
     val pattern(first, second, letter, password) = input
-    new PasswordWithPolicyTwo(first.toInt, second.toInt, letter.head, password)
+    val policy = PasswordPolicyTwo(first.toInt, second.toInt, letter.head)
+    new PasswordWithPolicy(password, policy)
   }
 }
 
