@@ -1,27 +1,26 @@
-object Main {
-  def main(args: Array[String]) = {
-    val input = os.read(os.resource / "input").split("\n").toList.flatMap(_.toIntOption)
-    partOne(input)
-    partTwo(input)
+import cats.effect._
+
+object Main extends IOApp {
+  override def run(args: List[String]): IO[ExitCode] = {
+    for {
+      input <- readInput()
+      one <- search(input, 2, 2020)
+      _ <- printResult(one)
+      two <- search(input, 3, 2020)
+      _ <- printResult(two)
+    } yield ExitCode.Success
   }
 
-  def partOne(input: List[Int]): Unit = {
-    val result = findTwoNumsWithTotal(input, 2020)
-      .map(nums => nums._1 * nums._2)
-    println(result)
-  }
+  def readInput(): IO[Set[Int]] =
+    IO(os.read(os.resource / "input").split("\n").flatMap(_.toIntOption).toSet)
 
-  def partTwo(input: List[Int]): Unit = {
-    val result = input
-      .find(i => findTwoNumsWithTotal(input, 2020 - i).isDefined)
-      .flatMap(i => {
-        findTwoNumsWithTotal(input, 2020 - i).map(nums => (i, nums._1, nums._2))
-      })
-      .map(nums => nums._1 * nums._2 * nums._3)
-    println(result)
-  }
+  def search(input: Set[Int], size: Int, total: Int): IO[Option[Set[Int]]] =
+    IO(input.subsets(size).find(set => set.sum == total))
 
-  def findTwoNumsWithTotal(input: List[Int], total: Int): Option[(Int, Int)] = {
-    input.find(i => input.contains(total - i)).map(i => (i, total - i))
+  def printResult(result: Option[Set[Int]]): IO[Unit] = {
+    result match {
+      case None      => IO(println("No result found"))
+      case Some(set) => IO(println(s"${set.mkString(" * ")} = ${set.product}"))
+    }
   }
 }

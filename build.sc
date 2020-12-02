@@ -5,6 +5,7 @@ object day1 extends ScalaModule {
 
   def ivyDeps =
     Agg(
+      ivy"org.typelevel::cats-effect:2.1.3",
       ivy"com.lihaoyi::os-lib:0.7.0"
     )
 
