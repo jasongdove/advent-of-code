@@ -9,6 +9,15 @@ object aoc2020 extends ScalaModule {
       ivy"com.lihaoyi::os-lib:0.7.0"
     )
 
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.disneystreaming::weaver-framework:0.5.0",
+      ivy"com.disneystreaming::weaver-scalacheck:0.5.0",
+      ivy"com.disneystreaming::weaver-zio:0.5.0"
+    )
+    def testFrameworks = Seq("weaver.framework.TestFramework")
+  }
+
   def scalacOptions =
     Seq(
       "-deprecation",

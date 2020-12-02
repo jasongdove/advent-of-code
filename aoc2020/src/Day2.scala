@@ -41,23 +41,23 @@ object PasswordWithPolicy {
 object Day2 extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      inputOne <- readInputOne()
-      one <- search(inputOne)
+      inputOne <- readInputOne("day2.txt")
+      one <- IO(search(inputOne))
       _ <- printResult(one)
-      inputTwo <- readInputTwo()
-      two <- search(inputTwo)
+      inputTwo <- readInputTwo("day2.txt")
+      two <- IO(search(inputTwo))
       _ <- printResult(two)
     } yield ExitCode.Success
   }
 
-  def readInputOne(): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / "day2.txt").split("\n").map(PasswordWithPolicy.one).toList)
+  def readInputOne(resourceName: String): IO[List[PasswordWithPolicy]] =
+    IO(os.read(os.resource / resourceName).split("\n").map(PasswordWithPolicy.one).toList)
 
-  def readInputTwo(): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / "day2.txt").split("\n").map(PasswordWithPolicy.two).toList)
+  def readInputTwo(resourceName: String): IO[List[PasswordWithPolicy]] =
+    IO(os.read(os.resource / resourceName).split("\n").map(PasswordWithPolicy.two).toList)
 
-  def search(input: List[PasswordWithPolicy]): IO[Int] =
-    IO(input.count(_.isValid))
+  def search(input: List[PasswordWithPolicy]): Int =
+    input.count(_.isValid)
 
   def printResult(result: Int): IO[Unit] =
     IO(println(s"$result passwords are valid"))
