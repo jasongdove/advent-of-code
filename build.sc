@@ -1,6 +1,6 @@
 import mill._, scalalib._
 
-trait DayModule extends ScalaModule {
+object aoc2020 extends ScalaModule {
   def scalaVersion = "2.13.4"
 
   def ivyDeps =
@@ -46,7 +46,3 @@ trait DayModule extends ScalaModule {
       "-Ywarn-value-discard"
     )
 }
-
-object day1 extends DayModule
-
-object day2 extends DayModule

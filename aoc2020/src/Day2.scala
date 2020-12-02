@@ -1,3 +1,5 @@
+package aoc2020
+
 import cats.effect._
 
 abstract class PasswordPolicy {
@@ -36,7 +38,7 @@ object PasswordWithPolicy {
   }
 }
 
-object Main extends IOApp {
+object Day2 extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
       inputOne <- readInputOne()
@@ -49,10 +51,10 @@ object Main extends IOApp {
   }
 
   def readInputOne(): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / "input").split("\n").map(PasswordWithPolicy.one).toList)
+    IO(os.read(os.resource / "day2.txt").split("\n").map(PasswordWithPolicy.one).toList)
 
   def readInputTwo(): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / "input").split("\n").map(PasswordWithPolicy.two).toList)
+    IO(os.read(os.resource / "day2.txt").split("\n").map(PasswordWithPolicy.two).toList)
 
   def search(input: List[PasswordWithPolicy]): IO[Int] =
     IO(input.count(_.isValid))
