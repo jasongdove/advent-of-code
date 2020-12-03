@@ -2,11 +2,11 @@ package aoc2020
 
 import cats.effect._
 
-sealed abstract class MapSquare extends Product with Serializable
+sealed abstract class MapSquare(val score: Long) extends Product with Serializable
 
 object MapSquare {
-  final case object OpenSquare extends MapSquare
-  final case object Tree extends MapSquare
+  final case object OpenSquare extends MapSquare(0)
+  final case object Tree extends MapSquare(1)
 }
 
 case class MapRow(squares: List[MapSquare])
@@ -46,13 +46,9 @@ object Day3 extends IOApp {
     val height = map.rows.length
     val width = map.rows(0).squares.length
     @annotation.tailrec
-    def inner(acc: Long, x: Int, y: Int): Long = {
+    def inner(acc: Long, x: Int, y: Int): Long =
       if (y >= height) acc
-      else if (map.rows(y).squares(x) == MapSquare.Tree)
-        inner(acc + 1, (x + slopeRight) % width, y + slopeDown)
-      else
-        inner(acc, (x + slopeRight) % width, y + slopeDown)
-    }
+      else inner(acc + map.rows(y).squares(x).score, (x + slopeRight) % width, y + slopeDown)
     inner(0, 0, 0)
   }
 
