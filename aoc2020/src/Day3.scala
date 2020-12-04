@@ -45,21 +45,19 @@ object Day3 extends IOApp {
   def search(map: Map, slopeRight: Int, slopeDown: Int): Long = {
     val height = map.rows.length
     val width = map.rows(0).squares.length
+
     @annotation.tailrec
     def inner(acc: Long, x: Int, y: Int): Long =
       if (y >= height) acc
       else inner(acc + map.rows(y).squares(x).score, (x + slopeRight) % width, y + slopeDown)
+
     inner(0, 0, 0)
   }
 
-  def multiSearch(map: Map): Long = {
-    val one = search(map, 1, 1)
-    val two = search(map, 3, 1)
-    val three = search(map, 5, 1)
-    val four = search(map, 7, 1)
-    val five = search(map, 1, 2)
-    one * two * three * four * five
-  }
+  def multiSearch(map: Map): Long =
+    List((1, 1), (3, 1), (5, 1), (7, 1), (1, 2))
+      .map(s => search(map, s._1, s._2))
+      .reduce(_ * _)
 
   def printResult(result: Long): IO[Unit] =
     IO(println(s"found $result trees"))
