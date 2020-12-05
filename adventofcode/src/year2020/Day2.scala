@@ -1,4 +1,6 @@
-package aoc2020
+package adventofcode.year2020
+
+import adventofcode.Day
 
 abstract class PasswordPolicy {
   def isValid(password: String): Boolean
@@ -38,7 +40,7 @@ object PasswordWithPolicy {
 
 case class Day2Context(policyParser: String => PasswordWithPolicy)
 
-object Day2 extends Day[List[String], Day2Context](2) {
+object Day2 extends Day[List[String], Day2Context](2020, 2) {
   override def transformInput(lines: List[String]): List[String] = lines
 
   override def partOneContext(): Option[Day2Context] =

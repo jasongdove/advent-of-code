@@ -1,10 +1,10 @@
-package aoc2020
+package adventofcode.year2020
 
 import weaver._
 import cats.effect._
 
-object Day4Suite extends SimpleIOSuite {
-  import Day4._
+object Day2Suite extends SimpleIOSuite {
+  import Day2._
 
   simpleTest("part 1 example") {
     for {
@@ -18,18 +18,15 @@ object Day4Suite extends SimpleIOSuite {
     for {
       input <- realInput()
       result <- IO(process(input, partOneContext()))
-      _ <- expect(result == Some(170)).failFast
+      _ <- expect(result == Some(477)).failFast
     } yield success
   }
 
   simpleTest("part 2 example") {
     for {
-      inputOne <- linesOfInput("day4-example-invalid.txt")(transformInput)
-      resultOne <- IO(process(inputOne, partTwoContext()))
-      _ <- expect(resultOne == Some(0)).failFast
-      inputTwo <- linesOfInput("day4-example-valid.txt")(transformInput)
-      resultTwo <- IO(process(inputTwo, partTwoContext()))
-      _ <- expect(resultTwo == Some(4)).failFast
+      input <- exampleInput()
+      result <- IO(process(input, partTwoContext()))
+      _ <- expect(result == Some(1)).failFast
     } yield success
   }
 
@@ -37,7 +34,7 @@ object Day4Suite extends SimpleIOSuite {
     for {
       input <- realInput()
       result <- IO(process(input, partTwoContext()))
-      _ <- expect(result == Some(103)).failFast
+      _ <- expect(result == Some(686)).failFast
     } yield success
   }
 }

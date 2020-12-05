@@ -1,4 +1,4 @@
-package aoc2020
+package adventofcode.year2020
 
 import weaver._
 import cats.effect._

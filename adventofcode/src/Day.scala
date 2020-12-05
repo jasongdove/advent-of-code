@@ -1,15 +1,15 @@
-package aoc2020
+package adventofcode
 
 import cats.effect._
 
-abstract class Day[A, B](val dayNumber: Int) extends IOApp {
+abstract class Day[A, B](val yearNumber: Int, val dayNumber: Int) extends IOApp {
   private val exampleInputResourceName = s"day${dayNumber}-example.txt"
   private val realInputResourceName = s"day${dayNumber}.txt"
 
   def splitOn(): String = "\n"
 
   def linesOfInput(resourceName: String)(transform: List[String] => A): IO[A] =
-    IO(transform(os.read(os.resource / resourceName).split(splitOn()).toList))
+    IO(transform(os.read(os.resource / yearNumber.toString / resourceName).split(splitOn()).toList))
 
   def transformInput(lines: List[String]): A
   def exampleInput() = linesOfInput(exampleInputResourceName)(transformInput)

@@ -1,6 +1,6 @@
 import mill._, scalalib._
 
-object aoc2020 extends ScalaModule {
+object adventofcode extends ScalaModule {
   def scalaVersion = "2.13.4"
 
   def ivyDeps =

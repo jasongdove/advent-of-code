@@ -1,8 +1,10 @@
-package aoc2020
+package adventofcode.year2020
+
+import adventofcode.Day
 
 case class Day1Context(size: Int, total: Int)
 
-object Day1 extends Day[Set[Long], Day1Context](1) {
+object Day1 extends Day[Set[Long], Day1Context](2020, 1) {
   override def transformInput(lines: List[String]): Set[Long] =
     lines.map(_.toLongOption).flatten.toSet
 
