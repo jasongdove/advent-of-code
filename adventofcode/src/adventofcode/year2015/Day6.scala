@@ -2,7 +2,7 @@ package adventofcode.year2015
 
 import adventofcode.Day
 
-case class Range(x1: Int, y1: Int, x2: Int, y2: Int)
+case class GridRange(x1: Int, y1: Int, x2: Int, y2: Int)
 
 sealed abstract class Action
 
@@ -12,7 +12,7 @@ object Action {
   case object TurnOff extends Action
 }
 
-case class SantaInstruction(action: Action, range: Range)
+case class SantaInstruction(action: Action, range: GridRange)
 
 object SantaInstruction {
   val pattern = "(.*) (\\d+),(\\d+) through (\\d+),(\\d+)".r
@@ -23,7 +23,7 @@ object SantaInstruction {
       case "turn off" => Action.TurnOff
       case _          => Action.Toggle
     }
-    new SantaInstruction(action, new Range(x1.toInt, y1.toInt, x2.toInt, y2.toInt))
+    new SantaInstruction(action, new GridRange(x1.toInt, y1.toInt, x2.toInt, y2.toInt))
   }
 }
 
