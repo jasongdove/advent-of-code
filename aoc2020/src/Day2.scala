@@ -38,23 +38,25 @@ object PasswordWithPolicy {
   }
 }
 
-object Day2 extends IOApp {
+object Day2 extends Day[List[PasswordWithPolicy]](2) with IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      inputOne <- readInputOne("day2.txt")
+      inputOne <- realInputOne()
       one <- IO(search(inputOne))
       _ <- printResult(one)
-      inputTwo <- readInputTwo("day2.txt")
+      inputTwo <- realInputTwo()
       two <- IO(search(inputTwo))
       _ <- printResult(two)
     } yield ExitCode.Success
   }
 
-  def readInputOne(resourceName: String): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / resourceName).split("\n").map(PasswordWithPolicy.one).toList)
+  override def transformInput(lines: List[String]): List[PasswordWithPolicy] = ???
 
-  def readInputTwo(resourceName: String): IO[List[PasswordWithPolicy]] =
-    IO(os.read(os.resource / resourceName).split("\n").map(PasswordWithPolicy.two).toList)
+  override def transformInputOne(lines: List[String]): List[PasswordWithPolicy] =
+    lines.map(PasswordWithPolicy.one)
+
+  override def transformInputTwo(lines: List[String]): List[PasswordWithPolicy] =
+    lines.map(PasswordWithPolicy.two)
 
   def search(input: List[PasswordWithPolicy]): Int =
     input.count(_.isValid)

@@ -2,10 +2,10 @@ package aoc2020
 
 import cats.effect._
 
-object Day1 extends IOApp {
+object Day1 extends Day[Set[Int]](1) with IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      input <- readInput("day1.txt")
+      input <- realInput()
       one <- IO(search(input, 2, 2020))
       _ <- printResult(one)
       two <- IO(search(input, 3, 2020))
@@ -13,8 +13,8 @@ object Day1 extends IOApp {
     } yield ExitCode.Success
   }
 
-  def readInput(resourceName: String): IO[Set[Int]] =
-    IO(os.read(os.resource / resourceName).split("\n").flatMap(_.toIntOption).toSet)
+  override def transformInput(lines: List[String]): Set[Int] =
+    lines.map(_.toIntOption).flatten.toSet
 
   def search(input: Set[Int], size: Int, total: Int): Option[Set[Int]] =
     input.subsets(size).find(_.sum == total)

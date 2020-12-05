@@ -53,7 +53,7 @@ object Passport {
   }
 }
 
-object Day4 extends IOApp {
+object Day4 extends Day[List[Passport]](4) with IOApp {
   val part1Required = List(
     RequiredField("byr", RequiredField.anyValidator),
     RequiredField("iyr", RequiredField.anyValidator),
@@ -78,7 +78,7 @@ object Day4 extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      input <- readInput("day4.txt")
+      input <- realInput()
       resultOne <- IO(search(input, part1Required, optional))
       _ <- printResult(resultOne)
       resultTwo <- IO(search(input, part2Required, optional))
@@ -86,13 +86,10 @@ object Day4 extends IOApp {
     } yield ExitCode.Success
   }
 
-  def readInput(resourceName: String): IO[List[Passport]] = IO {
-    os.read(os.resource / resourceName)
-      .split("\n\n")
-      .toList
-      .map(s => s.replace("\n", " "))
-      .map(Passport.from)
-  }
+  override def splitOn(): String = "\n\n"
+
+  override def transformInput(lines: List[String]): List[Passport] =
+    lines.map(_.replace("\n", " ")).map(Passport.from)
 
   def search(passports: List[Passport], required: List[RequiredField], optional: List[String]): Int = {
     val allKnown = required.map(_.key) ++ optional

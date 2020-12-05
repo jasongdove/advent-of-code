@@ -28,10 +28,10 @@ object Map {
     }
 }
 
-object Day3 extends IOApp {
+object Day3 extends Day[Map](3) with IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      input <- readInput("day3.txt")
+      input <- realInput()
       result <- IO(search(input, 3, 1))
       _ <- printResult(result)
       result <- IO(multiSearch(input))
@@ -39,8 +39,8 @@ object Day3 extends IOApp {
     } yield ExitCode.Success
   }
 
-  def readInput(resourceName: String): IO[Map] =
-    IO(Map.from(os.read(os.resource / resourceName).split("\n").toList))
+  override def transformInput(lines: List[String]): Map =
+    Map.from(lines)
 
   def search(map: Map, slopeRight: Int, slopeDown: Int): Long = {
     val height = map.rows.length

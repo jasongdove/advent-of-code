@@ -79,14 +79,14 @@ case class Plane(rowTree: BSPTree, colTree: BSPTree) {
   }
 }
 
-object Day5 extends IOApp {
+object Day5 extends Day[List[SeatSpecifier]](5) with IOApp {
   val rowTree = BSPTree.from(Range(0, 128).toList)
   val colTree = BSPTree.from(Range(0, 8).toList)
   val plane = Plane(rowTree, colTree)
 
   override def run(args: List[String]): IO[ExitCode] = {
     for {
-      input <- readInput("day5.txt")
+      input <- realInput()
       resultOne <- IO(maxId(input))
       _ <- printResult(Some(resultOne))
       resultTwo <- IO(mySeat(input))
@@ -94,12 +94,8 @@ object Day5 extends IOApp {
     } yield ExitCode.Success
   }
 
-  def readInput(resourceName: String): IO[List[SeatSpecifier]] = IO {
-    os.read(os.resource / resourceName)
-      .split("\n")
-      .toList
-      .map(SeatSpecifier.from)
-  }
+  override def transformInput(lines: List[String]): List[SeatSpecifier] =
+    lines.map(SeatSpecifier.from)
 
   def maxId(specs: List[SeatSpecifier]): Int =
     specs.flatMap(plane.seat(_)).map(_.id).max
