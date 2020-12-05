@@ -12,7 +12,7 @@ object Day1 extends Day[List[Long], Day1Context](2015, 1) {
   }
 
   override def transformInput(lines: List[String]): List[Long] =
-    lines.head.map(partOneSymbolToScore).toList
+    lines.mkString.trim.map(partOneSymbolToScore).toList
 
   override def partOneContext(): Option[Day1Context] =
     Some(Day1Context(processPartOne))
