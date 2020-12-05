@@ -1,7 +1,5 @@
 package aoc2020
 
-import cats.effect._
-
 case class RequiredField(key: String, validator: String => Boolean)
 
 object RequiredField {
@@ -53,8 +51,10 @@ object Passport {
   }
 }
 
-object Day4 extends Day[List[Passport]](4) with IOApp {
-  val part1Required = List(
+case class Day4Context(required: List[RequiredField], optional: List[String])
+
+object Day4 extends Day[List[Passport], Day4Context](4) {
+  private val part1Required = List(
     RequiredField("byr", RequiredField.anyValidator),
     RequiredField("iyr", RequiredField.anyValidator),
     RequiredField("eyr", RequiredField.anyValidator),
@@ -64,7 +64,7 @@ object Day4 extends Day[List[Passport]](4) with IOApp {
     RequiredField("pid", RequiredField.anyValidator)
   )
 
-  val part2Required = List(
+  private val part2Required = List(
     RequiredField("byr", RequiredField.byrValidator),
     RequiredField("iyr", RequiredField.iyrValidator),
     RequiredField("eyr", RequiredField.eyrValidator),
@@ -74,36 +74,29 @@ object Day4 extends Day[List[Passport]](4) with IOApp {
     RequiredField("pid", RequiredField.pidValidator)
   )
 
-  val optional = List("cid")
-
-  override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      input <- realInput()
-      resultOne <- IO(search(input, part1Required, optional))
-      _ <- printResult(resultOne)
-      resultTwo <- IO(search(input, part2Required, optional))
-      _ <- printResult(resultTwo)
-    } yield ExitCode.Success
-  }
+  private val optional = List("cid")
 
   override def splitOn(): String = "\n\n"
 
   override def transformInput(lines: List[String]): List[Passport] =
     lines.map(_.replace("\n", " ")).map(Passport.from)
 
-  def search(passports: List[Passport], required: List[RequiredField], optional: List[String]): Int = {
-    val allKnown = required.map(_.key) ++ optional
+  override def partOneContext(): Option[Day4Context] =
+    Some(Day4Context(part1Required, optional))
 
-    passports
-      .count { passport =>
-        val requiredFields = passport.fields.filter(f => required.exists(_.key == f.key))
-        val missingRequired = requiredFields.length != required.length
+  override def partTwoContext(): Option[Day4Context] =
+    Some(Day4Context(part2Required, optional))
+
+  override def process(passports: List[Passport], context: Option[Day4Context]): Option[Long] =
+    context.map { ctx =>
+      val allKnown = ctx.required.map(_.key) ++ optional
+
+      passports.count { passport =>
+        val requiredFields = passport.fields.filter(f => ctx.required.exists(_.key == f.key))
+        val missingRequired = requiredFields.length != ctx.required.length
         val unknown = passport.fields.exists(f => !allKnown.exists(_ == f.key))
 
-        !unknown && !missingRequired && requiredFields.count(_.isValid(required)) == requiredFields.length
-      }
-  }
-
-  def printResult(result: Int): IO[Unit] =
-    IO(println(s"found $result valid passports"))
+        !unknown && !missingRequired && requiredFields.count(_.isValid(ctx.required)) == requiredFields.length
+      }.toLong
+    }
 }

@@ -2,7 +2,7 @@ package aoc2020
 
 import cats.effect._
 
-abstract class Day[A](val dayNumber: Int) extends IOApp {
+abstract class Day[A, B](val dayNumber: Int) extends IOApp {
   private val exampleInputResourceName = s"day${dayNumber}-example.txt"
   private val realInputResourceName = s"day${dayNumber}.txt"
 
@@ -15,10 +15,21 @@ abstract class Day[A](val dayNumber: Int) extends IOApp {
   def exampleInput() = linesOfInput(exampleInputResourceName)(transformInput)
   def realInput() = linesOfInput(realInputResourceName)(transformInput)
 
-  def transformInputOne(lines: List[String]): A = transformInput(lines)
-  def transformInputTwo(lines: List[String]): A = transformInput(lines)
-  def exampleInputOne() = linesOfInput(exampleInputResourceName)(transformInputOne)
-  def realInputOne() = linesOfInput(realInputResourceName)(transformInputOne)
-  def exampleInputTwo() = linesOfInput(exampleInputResourceName)(transformInputTwo)
-  def realInputTwo() = linesOfInput(realInputResourceName)(transformInputTwo)
+  def process(input: A, context: Option[B]): Option[Long]
+
+  def partOneContext(): Option[B] = None
+  def partTwoContext(): Option[B] = None
+
+  override def run(args: List[String]): IO[ExitCode] =
+    for {
+      input <- realInput()
+
+      contextOne <- IO(partOneContext())
+      resultOne <- IO(process(input, contextOne))
+      _ <- IO(println(s"part 1: $resultOne"))
+
+      contextTwo <- IO(partTwoContext())
+      resultTwo <- IO(process(input, contextTwo))
+      _ <- IO(println(s"part 2: $resultTwo"))
+    } yield ExitCode.Success
 }

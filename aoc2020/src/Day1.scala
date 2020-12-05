@@ -1,28 +1,19 @@
 package aoc2020
 
-import cats.effect._
+case class Day1Context(size: Int, total: Int)
 
-object Day1 extends Day[Set[Int]](1) with IOApp {
-  override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      input <- realInput()
-      one <- IO(search(input, 2, 2020))
-      _ <- printResult(one)
-      two <- IO(search(input, 3, 2020))
-      _ <- printResult(two)
-    } yield ExitCode.Success
-  }
+object Day1 extends Day[Set[Long], Day1Context](1) {
+  override def transformInput(lines: List[String]): Set[Long] =
+    lines.map(_.toLongOption).flatten.toSet
 
-  override def transformInput(lines: List[String]): Set[Int] =
-    lines.map(_.toIntOption).flatten.toSet
+  override def partOneContext(): Option[Day1Context] =
+    Some(Day1Context(2, 2020))
 
-  def search(input: Set[Int], size: Int, total: Int): Option[Set[Int]] =
-    input.subsets(size).find(_.sum == total)
+  override def partTwoContext(): Option[Day1Context] =
+    Some(Day1Context(3, 2020))
 
-  def printResult(result: Option[Set[Int]]): IO[Unit] = {
-    result match {
-      case None      => IO(println("No result found"))
-      case Some(set) => IO(println(s"${set.mkString(" * ")} = ${set.product}"))
+  override def process(input: Set[Long], context: Option[Day1Context]): Option[Long] =
+    context.map { ctx =>
+      input.subsets(ctx.size).find(_.sum == ctx.total).toList.flatten.product
     }
-  }
 }

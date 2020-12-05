@@ -1,7 +1,5 @@
 package aoc2020
 
-import cats.effect._
-
 sealed trait Direction
 
 object Direction {
@@ -27,80 +25,80 @@ object SeatSpecifier {
   }
 }
 
-case class Seat(row: Int, column: Int) {
-  val id: Int = row * 8 + column
-}
+case class Day5Context(process: List[SeatSpecifier] => Option[Long])
 
-class BSPTree(val seats: List[Int], val front: Option[BSPTree], val back: Option[BSPTree]) {
-  def walk(directions: List[Direction]): Option[Leaf] = {
-    @annotation.tailrec
-    def loop(remaining: List[Direction], current: Option[BSPTree]): Option[Leaf] = {
-      remaining match {
-        case Nil =>
-          current match {
-            case Some(leaf: Leaf) => Some(leaf)
-            case _                => None
-          }
-        case head :: next =>
-          head match {
-            case Direction.Front => loop(next, current.flatMap(_.front))
-            case Direction.Back  => loop(next, current.flatMap(_.back))
-          }
+object Day5 extends Day[List[SeatSpecifier], Day5Context](5) {
+  case class Seat(row: Int, column: Int) {
+    val id: Long = row * 8L + column
+  }
+
+  class BSPTree(val seats: List[Int], val front: Option[BSPTree], val back: Option[BSPTree]) {
+    def walk(directions: List[Direction]): Option[Leaf] = {
+      @annotation.tailrec
+      def loop(remaining: List[Direction], current: Option[BSPTree]): Option[Leaf] = {
+        remaining match {
+          case Nil =>
+            current match {
+              case Some(leaf: Leaf) => Some(leaf)
+              case _                => None
+            }
+          case head :: next =>
+            head match {
+              case Direction.Front => loop(next, current.flatMap(_.front))
+              case Direction.Back  => loop(next, current.flatMap(_.back))
+            }
+        }
+      }
+      loop(directions, Some(this))
+    }
+  }
+
+  case class Leaf(value: Int) extends BSPTree(List(value), None, None)
+
+  object BSPTree {
+    def from(seats: List[Int]): BSPTree = {
+      if (seats.length == 1) {
+        Leaf(seats.head)
+      } else {
+        val mid = seats.min + ((seats.max - seats.min) / 2.0)
+        val (backSeats, frontSeats) = seats.partition(_ >= mid)
+        val front = BSPTree.from(frontSeats)
+        val back = BSPTree.from(backSeats)
+        new BSPTree(seats, Some(front), Some(back))
       }
     }
-    loop(directions, Some(this))
   }
-}
-
-case class Leaf(value: Int) extends BSPTree(List(value), None, None)
-
-object BSPTree {
-  def from(seats: List[Int]): BSPTree = {
-    if (seats.length == 1) {
-      Leaf(seats.head)
-    } else {
-      val mid = seats.min + ((seats.max - seats.min) / 2.0)
-      val (backSeats, frontSeats) = seats.partition(_ >= mid)
-      val front = BSPTree.from(frontSeats)
-      val back = BSPTree.from(backSeats)
-      new BSPTree(seats, Some(front), Some(back))
+  case class Plane(rowTree: BSPTree, colTree: BSPTree) {
+    def seat(specifier: SeatSpecifier): Option[Seat] = {
+      val row = rowTree.walk(specifier.rowDirections)
+      val col = colTree.walk(specifier.colDirections)
+      (row, col) match {
+        case (Some(r), Some(c)) => Some(Seat(r.value, c.value))
+        case _                  => None
+      }
     }
   }
-}
 
-case class Plane(rowTree: BSPTree, colTree: BSPTree) {
-  def seat(specifier: SeatSpecifier): Option[Seat] = {
-    val row = rowTree.walk(specifier.rowDirections)
-    val col = colTree.walk(specifier.colDirections)
-    (row, col) match {
-      case (Some(r), Some(c)) => Some(Seat(r.value, c.value))
-      case _                  => None
-    }
-  }
-}
-
-object Day5 extends Day[List[SeatSpecifier]](5) with IOApp {
-  val rowTree = BSPTree.from(Range(0, 128).toList)
-  val colTree = BSPTree.from(Range(0, 8).toList)
-  val plane = Plane(rowTree, colTree)
-
-  override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      input <- realInput()
-      resultOne <- IO(maxId(input))
-      _ <- printResult(Some(resultOne))
-      resultTwo <- IO(mySeat(input))
-      _ <- printResult(resultTwo)
-    } yield ExitCode.Success
-  }
+  private val rowTree = BSPTree.from(Range(0, 128).toList)
+  private val colTree = BSPTree.from(Range(0, 8).toList)
+  private val plane = Plane(rowTree, colTree)
 
   override def transformInput(lines: List[String]): List[SeatSpecifier] =
     lines.map(SeatSpecifier.from)
 
-  def maxId(specs: List[SeatSpecifier]): Int =
-    specs.flatMap(plane.seat(_)).map(_.id).max
+  override def partOneContext(): Option[Day5Context] =
+    Some(Day5Context(maxId))
 
-  def mySeat(specs: List[SeatSpecifier]): Option[Int] = {
+  override def partTwoContext(): Option[Day5Context] =
+    Some(Day5Context(mySeat))
+
+  override def process(input: List[SeatSpecifier], context: Option[Day5Context]): Option[Long] =
+    context.flatMap(_.process(input))
+
+  private def maxId(specs: List[SeatSpecifier]): Option[Long] =
+    Some(specs.flatMap(plane.seat(_)).map(_.id).max)
+
+  private def mySeat(specs: List[SeatSpecifier]): Option[Long] = {
     val allSeats = (for {
       r <- Range(0, 128)
       c <- Range(0, 8)
@@ -114,7 +112,4 @@ object Day5 extends Day[List[SeatSpecifier]](5) with IOApp {
     )
     mySeat.map(_.id)
   }
-
-  def printResult(result: Option[Int]): IO[Unit] =
-    IO(println(s"seat id: $result"))
 }

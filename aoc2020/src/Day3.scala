@@ -1,7 +1,5 @@
 package aoc2020
 
-import cats.effect._
-
 sealed abstract class MapSquare(val score: Long) extends Product with Serializable
 
 object MapSquare {
@@ -28,37 +26,33 @@ object Map {
     }
 }
 
-object Day3 extends Day[Map](3) with IOApp {
-  override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      input <- realInput()
-      result <- IO(search(input, 3, 1))
-      _ <- printResult(result)
-      result <- IO(multiSearch(input))
-      _ <- printResult(result)
-    } yield ExitCode.Success
-  }
+case class Slope(right: Int, down: Int)
+case class Day3Context(slopes: List[Slope])
 
+object Day3 extends Day[Map, Day3Context](3) {
   override def transformInput(lines: List[String]): Map =
     Map.from(lines)
 
-  def search(map: Map, slopeRight: Int, slopeDown: Int): Long = {
+  override def partOneContext(): Option[Day3Context] =
+    Some(Day3Context(List(Slope(3, 1))))
+
+  override def partTwoContext(): Option[Day3Context] =
+    Some(Day3Context(List(Slope(1, 1), Slope(3, 1), Slope(5, 1), Slope(7, 1), Slope(1, 2))))
+
+  override def process(map: Map, context: Option[Day3Context]): Option[Long] =
+    context.map { ctx =>
+      ctx.slopes.map(slope => countTrees(map, slope)).reduce(_ * _)
+    }
+
+  private def countTrees(map: Map, slope: Slope) = {
     val height = map.rows.length
     val width = map.rows(0).squares.length
 
     @annotation.tailrec
     def inner(acc: Long, x: Int, y: Int): Long =
       if (y >= height) acc
-      else inner(acc + map.rows(y).squares(x).score, (x + slopeRight) % width, y + slopeDown)
+      else inner(acc + map.rows(y).squares(x).score, (x + slope.right) % width, y + slope.down)
 
     inner(0, 0, 0)
   }
-
-  def multiSearch(map: Map): Long =
-    List((1, 1), (3, 1), (5, 1), (7, 1), (1, 2))
-      .map(s => search(map, s._1, s._2))
-      .reduce(_ * _)
-
-  def printResult(result: Long): IO[Unit] =
-    IO(println(s"found $result trees"))
 }

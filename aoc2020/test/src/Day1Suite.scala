@@ -4,35 +4,37 @@ import weaver._
 import cats.effect._
 
 object Day1Suite extends SimpleIOSuite {
+  import Day1._
+
   simpleTest("part 1 example") {
     for {
-      input <- Day1.exampleInput()
-      result <- IO(Day1.search(input, 2, 2020))
-      _ <- expect(result.map(_.product) == Some(514579)).failFast
+      input <- exampleInput()
+      result <- IO(process(input, partOneContext()))
+      _ <- expect(result == Some(514579)).failFast
     } yield success
   }
 
   simpleTest("part 1 solution") {
     for {
-      input <- Day1.realInput()
-      result <- IO(Day1.search(input, 2, 2020))
-      _ <- expect(result.map(_.product) == Some(935419)).failFast
+      input <- realInput()
+      result <- IO(process(input, partOneContext()))
+      _ <- expect(result == Some(935419)).failFast
     } yield success
   }
 
   simpleTest("part 2 example") {
     for {
-      input <- Day1.exampleInput()
-      result <- IO(Day1.search(input, 3, 2020))
-      _ <- expect(result.map(_.product) == Some(241861950)).failFast
+      input <- exampleInput()
+      result <- IO(process(input, partTwoContext()))
+      _ <- expect(result == Some(241861950)).failFast
     } yield success
   }
 
   simpleTest("part 2 solution") {
     for {
-      input <- Day1.realInput()
-      result <- IO(Day1.search(input, 3, 2020))
-      _ <- expect(result.map(_.product) == Some(49880012)).failFast
+      input <- realInput()
+      result <- IO(process(input, partTwoContext()))
+      _ <- expect(result == Some(49880012)).failFast
     } yield success
   }
 }

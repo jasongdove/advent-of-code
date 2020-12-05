@@ -1,7 +1,5 @@
 package aoc2020
 
-import cats.effect._
-
 abstract class PasswordPolicy {
   def isValid(password: String): Boolean
 }
@@ -38,29 +36,19 @@ object PasswordWithPolicy {
   }
 }
 
-object Day2 extends Day[List[PasswordWithPolicy]](2) with IOApp {
-  override def run(args: List[String]): IO[ExitCode] = {
-    for {
-      inputOne <- realInputOne()
-      one <- IO(search(inputOne))
-      _ <- printResult(one)
-      inputTwo <- realInputTwo()
-      two <- IO(search(inputTwo))
-      _ <- printResult(two)
-    } yield ExitCode.Success
-  }
+case class Day2Context(policyParser: String => PasswordWithPolicy)
 
-  override def transformInput(lines: List[String]): List[PasswordWithPolicy] = ???
+object Day2 extends Day[List[String], Day2Context](2) {
+  override def transformInput(lines: List[String]): List[String] = lines
 
-  override def transformInputOne(lines: List[String]): List[PasswordWithPolicy] =
-    lines.map(PasswordWithPolicy.one)
+  override def partOneContext(): Option[Day2Context] =
+    Some(Day2Context(PasswordWithPolicy.one))
 
-  override def transformInputTwo(lines: List[String]): List[PasswordWithPolicy] =
-    lines.map(PasswordWithPolicy.two)
+  override def partTwoContext(): Option[Day2Context] =
+    Some(Day2Context(PasswordWithPolicy.two))
 
-  def search(input: List[PasswordWithPolicy]): Int =
-    input.count(_.isValid)
-
-  def printResult(result: Int): IO[Unit] =
-    IO(println(s"$result passwords are valid"))
+  override def process(input: List[String], context: Option[Day2Context]): Option[Long] =
+    context.map { ctx =>
+      input.map(ctx.policyParser).count(_.isValid).toLong
+    }
 }
