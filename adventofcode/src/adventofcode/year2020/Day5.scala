@@ -29,7 +29,7 @@ object SeatSpecifier {
 
 case class Day5Context(process: List[SeatSpecifier] => Option[Long])
 
-object Day5 extends Day[List[SeatSpecifier], Day5Context](2020, 5) {
+object Day5 extends Day[List[SeatSpecifier], Day5Context, Long](2020, 5) {
   case class Seat(row: Int, column: Int) {
     val id: Long = row * 8L + column
   }

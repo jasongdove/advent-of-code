@@ -4,7 +4,7 @@ import adventofcode.Day
 
 case class Day5Context(classifier: String => Boolean)
 
-object Day5 extends Day[List[String], Day5Context](2015, 5) {
+object Day5 extends Day[List[String], Day5Context, Long](2015, 5) {
   override def transformInput(lines: List[String]): List[String] = lines
 
   override def partOneContext(): Option[Day5Context] =

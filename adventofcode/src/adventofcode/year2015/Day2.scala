@@ -27,7 +27,7 @@ object Box {
 
 case class Day2Context(process: List[Box] => Option[Long])
 
-object Day2 extends Day[List[Box], Day2Context](2015, 2) {
+object Day2 extends Day[List[Box], Day2Context, Long](2015, 2) {
 
   override def transformInput(lines: List[String]): List[Box] =
     lines.map(Box.from)

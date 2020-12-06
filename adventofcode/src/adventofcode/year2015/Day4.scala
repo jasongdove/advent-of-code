@@ -4,7 +4,7 @@ import adventofcode.Day
 
 case class Day4Context(leadingZeros: Int)
 
-object Day4 extends Day[String, Day4Context](2015, 4) {
+object Day4 extends Day[String, Day4Context, Long](2015, 4) {
 
   override def transformInput(lines: List[String]): String =
     lines.mkString

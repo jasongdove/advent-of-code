@@ -31,7 +31,7 @@ object Map {
 case class Slope(right: Int, down: Int)
 case class Day3Context(slopes: List[Slope])
 
-object Day3 extends Day[Map, Day3Context](2020, 3) {
+object Day3 extends Day[Map, Day3Context, Long](2020, 3) {
   override def transformInput(lines: List[String]): Map =
     Map.from(lines)
 

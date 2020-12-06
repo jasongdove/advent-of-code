@@ -46,7 +46,7 @@ object Node {
 
 case class Day7Context(filterCircuit: List[Node] => List[Node])
 
-object Day7 extends Day[List[Node], Day7Context](2015, 7) {
+object Day7 extends Day[List[Node], Day7Context, Long](2015, 7) {
   override def transformInput(lines: List[String]): List[Node] =
     lines.map(Node.from)
 

@@ -55,7 +55,7 @@ object Passport {
 
 case class Day4Context(required: List[RequiredField], optional: List[String])
 
-object Day4 extends Day[List[Passport], Day4Context](2020, 4) {
+object Day4 extends Day[List[Passport], Day4Context, Long](2020, 4) {
   private val part1Required = List(
     RequiredField("byr", RequiredField.anyValidator),
     RequiredField("iyr", RequiredField.anyValidator),

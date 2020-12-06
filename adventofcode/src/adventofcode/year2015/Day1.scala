@@ -4,7 +4,7 @@ import adventofcode.Day
 
 case class Day1Context(process: List[Long] => Option[Long])
 
-object Day1 extends Day[List[Long], Day1Context](2015, 1) {
+object Day1 extends Day[List[Long], Day1Context, Long](2015, 1) {
   private def partOneSymbolToScore(c: Char): Long = c match {
     case '(' => 1
     case ')' => -1

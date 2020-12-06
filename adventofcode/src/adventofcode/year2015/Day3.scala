@@ -21,7 +21,7 @@ object Direction {
 
 case class Day3Context(process: List[Direction] => Option[Long])
 
-object Day3 extends Day[List[Direction], Day3Context](2015, 3) {
+object Day3 extends Day[List[Direction], Day3Context, Long](2015, 3) {
 
   override def transformInput(lines: List[String]): List[Direction] =
     lines.mkString.trim.map(Direction.from).toList

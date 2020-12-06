@@ -29,7 +29,7 @@ object SantaInstruction {
 
 case class Day6Context(turnOn: Long => Long, turnOff: Long => Long, toggle: Long => Long)
 
-object Day6 extends Day[List[SantaInstruction], Day6Context](2015, 6) {
+object Day6 extends Day[List[SantaInstruction], Day6Context, Long](2015, 6) {
   override def transformInput(lines: List[String]): List[SantaInstruction] =
     lines.map(SantaInstruction.from)
 

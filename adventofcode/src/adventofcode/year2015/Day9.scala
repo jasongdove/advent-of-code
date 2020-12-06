@@ -39,7 +39,7 @@ object Graph {
 
 case class Day9Context(aggregate: List[Int] => Option[Long])
 
-object Day9 extends Day[Graph, Day9Context](2015, 9) {
+object Day9 extends Day[Graph, Day9Context, Long](2015, 9) {
 
   override def transformInput(lines: List[String]): Graph =
     Graph.from(lines.map(Edge.from))

@@ -2,7 +2,7 @@ package adventofcode
 
 import cats.effect._
 
-abstract class Day[A, B](val yearNumber: Int, val dayNumber: Int) extends IOApp {
+abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOApp {
   private val exampleInputResourceName = s"day${dayNumber}-example.txt"
   private val realInputResourceName = s"day${dayNumber}.txt"
 
@@ -15,7 +15,7 @@ abstract class Day[A, B](val yearNumber: Int, val dayNumber: Int) extends IOApp 
   def exampleInput() = linesOfInput(exampleInputResourceName)(transformInput)
   def realInput() = linesOfInput(realInputResourceName)(transformInput)
 
-  def process(input: A, context: Option[B]): Option[Long]
+  def process(input: A, context: Option[B]): Option[C]
 
   def partOneContext(): Option[B] = None
   def partTwoContext(): Option[B] = None
