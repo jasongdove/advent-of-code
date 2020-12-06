@@ -6,7 +6,8 @@ object adventofcode extends ScalaModule {
   def ivyDeps =
     Agg(
       ivy"org.typelevel::cats-effect:2.1.3",
-      ivy"com.lihaoyi::os-lib:0.7.0"
+      ivy"com.lihaoyi::os-lib:0.7.0",
+      ivy"com.lihaoyi::upickle:1.2.2"
     )
 
   object test extends Tests {
