@@ -7,7 +7,7 @@ case class Day9Context(aggregate: List[Int] => Option[Long])
 object Day9 extends Day[WeightedGraph, Day9Context, Long](2015, 9) {
 
   override def transformInput(lines: List[String]): WeightedGraph =
-    WeightedGraph.from(lines.map(edgeFrom))
+    WeightedGraph.undirectedFrom(lines.map(edgeFrom))
 
   override def partOneContext(): Option[Day9Context] =
     Some(Day9Context(l => Some(l.min.toLong)))

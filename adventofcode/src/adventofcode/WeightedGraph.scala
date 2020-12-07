@@ -3,10 +3,24 @@ package adventofcode
 case class Edge(from: String, to: String, weight: Int)
 case class Target(name: String, weight: Int)
 
-case class WeightedGraph(adj: Map[String, Set[Target]]) {
+case class WeightedGraph(nodes: List[String], adj: Map[String, Set[Target]]) {
+
   def hamiltonianWeights(start: String): Option[List[Int]] = weights(start, false)
 
   def tspWeights(start: String): Option[List[Int]] = weights(start, true)
+
+  def areConnected(start: String, finish: String): Boolean = {
+    if (start == finish) false
+    else {
+      def loop(current: String): Boolean = {
+        if (!adj.keySet.contains(current) || adj(current).isEmpty) false
+        else if (adj(current).exists(_.name == finish)) true
+        else adj(current).exists(t => loop(t.name))
+      }
+
+      loop(start)
+    }
+  }
 
   private def weights(start: String, addFinalWeight: Boolean): Option[List[Int]] = {
     def loop(
@@ -36,7 +50,8 @@ case class WeightedGraph(adj: Map[String, Set[Target]]) {
 }
 
 object WeightedGraph {
-  def from(edges: List[Edge]): WeightedGraph = {
+
+  def undirectedFrom(edges: List[Edge]): WeightedGraph = {
     @annotation.tailrec
     def build(
       adj: Map[String, Set[Target]],
@@ -52,6 +67,29 @@ object WeightedGraph {
           build(a2, tail)
       }
     }
-    WeightedGraph(build(Map.empty, edges))
+
+    val adjList = build(Map.empty, edges)
+    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.name))
+    WeightedGraph(nodes.toList, adjList)
+  }
+
+  def directedFrom(edges: List[Edge]): WeightedGraph = {
+    @annotation.tailrec
+    def build(
+      adj: Map[String, Set[Target]],
+      edges: List[Edge]
+    ): Map[String, Set[Target]] = {
+      edges match {
+        case Nil => adj
+        case head :: tail =>
+          val v = adj.getOrElse(head.from, Set.empty)
+          val a = adj.updated(head.from, v + Target(head.to, head.weight))
+          build(a, tail)
+      }
+    }
+
+    val adjList = build(Map.empty, edges)
+    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.name))
+    WeightedGraph(nodes.toList, adjList)
   }
 }

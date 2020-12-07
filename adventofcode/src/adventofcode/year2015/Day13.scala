@@ -16,7 +16,7 @@ object Day13 extends Day[List[Edge], Day13Context, Long](2015, 13) {
 
   override def process(input: List[Edge], context: Option[Day13Context]): Option[Long] =
     context.map { ctx =>
-      val graph = WeightedGraph.from(ctx.transformEdges(input))
+      val graph = WeightedGraph.undirectedFrom(ctx.transformEdges(input))
       val weights = graph.adj.flatMap(a => graph.tspWeights(a._1)).flatten.toList
       weights.max.toLong
     }

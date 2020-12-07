@@ -10,11 +10,11 @@ object MapSquare {
 }
 
 case class MapRow(squares: List[MapSquare])
-case class Map(rows: List[MapRow])
+case class SkiMap(rows: List[MapRow])
 
-object Map {
-  def from(lines: List[String]): Map = {
-    new Map(lines.map(row(_)))
+object SkiMap {
+  def from(lines: List[String]): SkiMap = {
+    new SkiMap(lines.map(row(_)))
   }
 
   def row(line: String): MapRow = {
@@ -31,9 +31,9 @@ object Map {
 case class Slope(right: Int, down: Int)
 case class Day3Context(slopes: List[Slope])
 
-object Day3 extends Day[Map, Day3Context, Long](2020, 3) {
-  override def transformInput(lines: List[String]): Map =
-    Map.from(lines)
+object Day3 extends Day[SkiMap, Day3Context, Long](2020, 3) {
+  override def transformInput(lines: List[String]): SkiMap =
+    SkiMap.from(lines)
 
   override def partOneContext(): Option[Day3Context] =
     Some(Day3Context(List(Slope(3, 1))))
@@ -41,12 +41,12 @@ object Day3 extends Day[Map, Day3Context, Long](2020, 3) {
   override def partTwoContext(): Option[Day3Context] =
     Some(Day3Context(List(Slope(1, 1), Slope(3, 1), Slope(5, 1), Slope(7, 1), Slope(1, 2))))
 
-  override def process(map: Map, context: Option[Day3Context]): Option[Long] =
+  override def process(map: SkiMap, context: Option[Day3Context]): Option[Long] =
     context.map { ctx =>
       ctx.slopes.map(slope => countTrees(map, slope)).reduce(_ * _)
     }
 
-  private def countTrees(map: Map, slope: Slope) = {
+  private def countTrees(map: SkiMap, slope: Slope) = {
     val height = map.rows.length
     val width = map.rows(0).squares.length
 

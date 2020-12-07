@@ -2,18 +2,44 @@ package adventofcode
 
 import cats.effect._
 
-abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOApp {
-  private val exampleInputResourceName = s"day${dayNumber}-example.txt"
-  private val realInputResourceName = s"day${dayNumber}.txt"
+sealed abstract class ResourceType
+object ResourceType {
+  case object Example extends ResourceType
+  case object Real extends ResourceType
+}
 
+sealed abstract class PartNumber
+object PartNumber {
+  case object Unspecified extends PartNumber
+  case object One extends PartNumber
+  case object Two extends PartNumber
+}
+
+abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOApp {
   def splitOn(): String = "\n"
+
+  def linesOfInput(resourceType: ResourceType, partNumber: PartNumber)(transform: List[String] => A): IO[A] = {
+    val resourceTypeString = resourceType match {
+      case ResourceType.Example => "-example"
+      case ResourceType.Real    => ""
+    }
+    val partNumberString = partNumber match {
+      case PartNumber.Unspecified => ""
+      case PartNumber.One         => "-part1"
+      case PartNumber.Two         => "-part2"
+    }
+    val resourceNameWithPartNumber = s"day$dayNumber$resourceTypeString$partNumberString.txt"
+    linesOfInput(resourceNameWithPartNumber)(transform)
+  }
 
   def linesOfInput(resourceName: String)(transform: List[String] => A): IO[A] =
     IO(transform(os.read(os.resource / yearNumber.toString / resourceName).split(splitOn()).toList))
 
   def transformInput(lines: List[String]): A
-  def exampleInput() = linesOfInput(exampleInputResourceName)(transformInput)
-  def realInput() = linesOfInput(realInputResourceName)(transformInput)
+  def exampleInput(partNumber: PartNumber = PartNumber.Unspecified) =
+    linesOfInput(ResourceType.Example, partNumber)(transformInput)
+  def realInput(partNumber: PartNumber = PartNumber.Unspecified) =
+    linesOfInput(ResourceType.Real, partNumber)(transformInput)
 
   def process(input: A, context: Option[B]): Option[C]
 
