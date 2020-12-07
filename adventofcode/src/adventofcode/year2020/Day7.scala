@@ -26,9 +26,7 @@ object Day7 extends Day[WeightedGraph, Day7Context, Int](2020, 7) {
       input.adj.get(bag) match {
         case None => 0
         case Some(innerBags) =>
-          innerBags.foldLeft(0) { (acc, b) =>
-            acc + b.weight + b.weight * countBags(b.name)
-          }
+          innerBags.toList.map(b => b.weight + b.weight * countBags(b.name)).sum
       }
     }
 
