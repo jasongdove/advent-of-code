@@ -45,21 +45,18 @@ object Day8 extends Day[List[AsmInstruction], Day8Context, Int](2020, 8) {
 
   def terminates(instructions: List[AsmInstruction]): (Boolean, Int) = {
     @annotation.tailrec
-    def eval(acc: Int, visited: List[Int], currentIndex: Int): (Boolean, Int) = {
-      if (currentIndex == instructions.length) (true, acc)
-      else {
-        val currentInstruction = instructions(currentIndex)
-        if (visited.contains(currentIndex)) (false, acc)
-        else if (instructions.forall(visited.contains)) (true, acc)
-        else {
-          currentInstruction.operation match {
-            case AsmOperation.Nop => eval(acc, currentIndex +: visited, currentIndex + 1)
-            case AsmOperation.Acc => eval(acc + currentInstruction.operand, currentIndex +: visited, currentIndex + 1)
-            case AsmOperation.Jmp => eval(acc, currentIndex +: visited, currentIndex + currentInstruction.operand)
-          }
-        }
+    def eval(acc: Int, visited: List[Int], currentIndex: Int): (Boolean, Int) =
+      instructions.lift(currentIndex) match {
+        case None => (true, acc)
+        case Some(currentInstruction) =>
+          if (visited.contains(currentIndex)) (false, acc)
+          else
+            currentInstruction.operation match {
+              case AsmOperation.Nop => eval(acc, currentIndex +: visited, currentIndex + 1)
+              case AsmOperation.Acc => eval(acc + currentInstruction.operand, currentIndex +: visited, currentIndex + 1)
+              case AsmOperation.Jmp => eval(acc, currentIndex +: visited, currentIndex + currentInstruction.operand)
+            }
       }
-    }
 
     eval(0, List.empty, 0)
   }
