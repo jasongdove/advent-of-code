@@ -16,6 +16,8 @@ object PartNumber {
 }
 
 abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOApp {
+  var partOneResult: Option[C] = None
+
   def splitOn(): String = "\n"
 
   def linesOfInput(resourceType: ResourceType, partNumber: PartNumber)(transform: List[String] => A): IO[A] = {
@@ -52,6 +54,7 @@ abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOA
 
       contextOne <- IO(partOneContext())
       resultOne <- IO(process(input, contextOne))
+      _ <- IO(this.partOneResult = resultOne)
       _ <- IO(println(s"part 1: $resultOne"))
 
       contextTwo <- IO(partTwoContext())
