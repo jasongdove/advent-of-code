@@ -42,9 +42,7 @@ object Day9 extends Day[List[Long], Day9Context, Long](2020, 9) {
 
   private def findContiguous(list: List[Long], target: Long): Option[List[Long]] = {
     (2 to list.indexOf(target)).flatMap { length =>
-      (0 to list.length - length - 1)
-        .map(start => list.slice(start, start + length))
-        .find(_.sum == target)
+      list.sliding(length).find(_.sum == target)
     }.headOption
   }
 }
