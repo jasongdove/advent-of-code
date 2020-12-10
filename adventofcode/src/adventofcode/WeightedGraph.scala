@@ -40,7 +40,6 @@ case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
   }
 
   private def topoSort(start: A): List[A] = {
-    // TODO: maybe use accumulators
     val visited = scala.collection.mutable.Set[A]()
     val sorted = scala.collection.mutable.ListBuffer[A]()
 
@@ -52,7 +51,7 @@ case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
           targets.foreach { target =>
             if (!visited.contains(target.value)) loop(target.value)
           }
-          sorted.insert(0, current)
+          current +=: sorted
       }
     }
 

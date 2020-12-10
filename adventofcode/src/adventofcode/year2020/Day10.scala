@@ -31,6 +31,7 @@ object Day10 extends Day[WeightedGraph[Day10Adapter], Day10Context, Long](2020, 
   }
 
   private def edgesFrom(lines: List[Int]): List[Edge[Day10Adapter]] = {
+    @annotation.tailrec
     def loop(acc: List[Edge[Day10Adapter]], remaining: List[Int]): List[Edge[Day10Adapter]] = {
       remaining match {
         case Nil => acc
