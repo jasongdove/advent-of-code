@@ -1,44 +1,82 @@
 package adventofcode
 
-case class Edge(from: String, to: String, weight: Int)
-case class Target(name: String, weight: Int)
+case class Edge[A](from: A, to: A, weight: Int)
+case class Target[A](value: A, weight: Int)
 
-case class WeightedGraph(nodes: List[String], adj: Map[String, Set[Target]]) {
+case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
 
-  def hamiltonianWeights(start: String): Option[List[Int]] = weights(start, false)
+  def hamiltonianWeights(start: A): Option[List[Int]] = weights(start, false)
 
-  def tspWeights(start: String): Option[List[Int]] = weights(start, true)
+  def tspWeights(start: A): Option[List[Int]] = weights(start, true)
 
-  def areConnected(start: String, finish: String): Boolean = {
+  def areConnected(start: A, finish: A): Boolean = {
     if (start == finish) false
     else {
-      def loop(current: String): Boolean = {
+      def loop(current: A): Boolean = {
         if (!adj.keySet.contains(current) || adj(current).isEmpty) false
-        else if (adj(current).exists(_.name == finish)) true
-        else adj(current).exists(t => loop(t.name))
+        else if (adj(current).exists(_.value == finish)) true
+        else adj(current).exists(t => loop(t.value))
       }
 
       loop(start)
     }
   }
 
-  private def weights(start: String, addFinalWeight: Boolean): Option[List[Int]] = {
+  def countPaths(start: A, finish: A): Long = {
+    val sorted = topoSort(start)
+
+    val pathsToFinish = sorted.foldRight(Map[A, Long]((finish, 1))) { case (node, acc) =>
+      adj.lift(node) match {
+        case None => acc
+        case Some(targets) =>
+          acc ++ targets.foldLeft(acc) { case (a, target) =>
+            val current = if (a.contains(node)) a(node) else 0
+            a.updated(node, current + a(target.value))
+          }
+      }
+    }
+
+    pathsToFinish(start)
+  }
+
+  private def topoSort(start: A): List[A] = {
+    // TODO: maybe use accumulators
+    val visited = scala.collection.mutable.Set[A]()
+    val sorted = scala.collection.mutable.ListBuffer[A]()
+
+    def loop(current: A): Unit = {
+      visited.add(current)
+      adj.lift(current) match {
+        case None => ()
+        case Some(targets) =>
+          targets.foreach { target =>
+            if (!visited.contains(target.value)) loop(target.value)
+          }
+          sorted.insert(0, current)
+      }
+    }
+
+    loop(start)
+    sorted.toList
+  }
+
+  private def weights(start: A, addFinalWeight: Boolean): Option[List[Int]] = {
     def loop(
-      visited: List[String],
-      current: String,
+      visited: List[A],
+      current: A,
       weight: Int
     ): Option[List[Int]] = {
       if (adj.keySet.forall(visited.contains)) {
         val weightResult = if (addFinalWeight) {
-          val weightToStart = adj(current).find(_.name == start).map(_.weight).getOrElse(0)
+          val weightToStart = adj(current).find(_.value == start).map(_.weight).getOrElse(0)
           weight + weightToStart
         } else weight
 
         Some(List(weightResult))
       } else {
         val adjWeights = adj(current)
-          .filter(t => !visited.contains(t.name))
-          .map(t => loop(t.name +: visited, t.name, weight + t.weight))
+          .filter(t => !visited.contains(t.value))
+          .map(t => loop(t.value +: visited, t.value, weight + t.weight))
           .flatten
           .toList
 
@@ -51,12 +89,12 @@ case class WeightedGraph(nodes: List[String], adj: Map[String, Set[Target]]) {
 
 object WeightedGraph {
 
-  def undirectedFrom(edges: List[Edge]): WeightedGraph = {
+  def undirectedFrom[A](edges: List[Edge[A]]): WeightedGraph[A] = {
     @annotation.tailrec
     def build(
-      adj: Map[String, Set[Target]],
-      edges: List[Edge]
-    ): Map[String, Set[Target]] = {
+      adj: Map[A, Set[Target[A]]],
+      edges: List[Edge[A]]
+    ): Map[A, Set[Target[A]]] = {
       edges match {
         case Nil => adj
         case head :: tail =>
@@ -69,16 +107,16 @@ object WeightedGraph {
     }
 
     val adjList = build(Map.empty, edges)
-    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.name))
+    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.value))
     WeightedGraph(nodes.toList, adjList)
   }
 
-  def directedFrom(edges: List[Edge]): WeightedGraph = {
+  def directedFrom[A](edges: List[Edge[A]]): WeightedGraph[A] = {
     @annotation.tailrec
     def build(
-      adj: Map[String, Set[Target]],
-      edges: List[Edge]
-    ): Map[String, Set[Target]] = {
+      adj: Map[A, Set[Target[A]]],
+      edges: List[Edge[A]]
+    ): Map[A, Set[Target[A]]] = {
       edges match {
         case Nil => adj
         case head :: tail =>
@@ -89,7 +127,7 @@ object WeightedGraph {
     }
 
     val adjList = build(Map.empty, edges)
-    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.name))
+    val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.value))
     WeightedGraph(nodes.toList, adjList)
   }
 }
