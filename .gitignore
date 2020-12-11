@@ -3,3 +3,4 @@ out/
 .metals/
 .vscode/
 adventofcode/resources/
+.idea/
