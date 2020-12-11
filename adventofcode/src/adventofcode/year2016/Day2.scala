@@ -1,9 +1,8 @@
 package adventofcode.year2016
 
-import adventofcode.Day
+import adventofcode.{Day, GridLocation}
 
-case class Day2Location(row: Int, col: Int)
-case class Day2Keypad(startLocation: Day2Location, data: List[List[Option[Char]]]) {}
+case class Day2Keypad(startLocation: GridLocation, data: List[List[Option[Char]]]) {}
 
 case class Day2Context(keypad: Day2Keypad)
 
@@ -25,16 +24,16 @@ object Day2 extends Day[List[String], Day2Context, String](2016, 2) {
   override def transformInput(lines: List[String]): List[String] = lines
 
   override def partOneContext(): Option[Day2Context] =
-    Some(Day2Context(Day2Keypad(Day2Location(1, 1), partOneData)))
+    Some(Day2Context(Day2Keypad(GridLocation(1, 1), partOneData)))
 
   override def partTwoContext(): Option[Day2Context] =
-    Some(Day2Context(Day2Keypad(Day2Location(0, 2), partTwoData)))
+    Some(Day2Context(Day2Keypad(GridLocation(0, 2), partTwoData)))
 
   override def process(input: List[String], context: Option[Day2Context]): Option[String] =
     context.map { ctx =>
       val max = ctx.keypad.data.length
-      def move(l: Day2Location, dr: Int, dc: Int) = {
-        val nl = Day2Location(l.row + dr, l.col + dc)
+      def move(l: GridLocation, dr: Int, dc: Int) = {
+        val nl = GridLocation(l.row + dr, l.col + dc)
         val onGrid = nl.row >= 0 && nl.col >= 0 && nl.row < max && nl.col < max
         if (onGrid && ctx.keypad.data(nl.row)(nl.col).isDefined) nl else l
       }
