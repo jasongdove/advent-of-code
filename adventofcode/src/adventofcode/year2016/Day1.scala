@@ -1,14 +1,10 @@
 package adventofcode.year2016
 
-import adventofcode.Day
+import adventofcode.{Day, Point}
 
 case class Day1Context(process: List[String] => Option[Int])
 
 object Day1 extends Day[List[String], Day1Context, Int](2016, 1) {
-  case class Location(x: Int, y: Int) {
-    lazy val distanceFromOrigin: Int = math.abs(x) + math.abs(y)
-  }
-
   override def transformInput(lines: List[String]): List[String] =
     lines.mkString.trim.split(", ").toList
 
@@ -26,7 +22,7 @@ object Day1 extends Day[List[String], Day1Context, Int](2016, 1) {
 
   private def processPartTwo(instructions: List[String]): Option[Int] = {
     @annotation.tailrec
-    def visitedTwice(acc: Set[Location], remaining: List[Location]): Option[Location] = {
+    def visitedTwice(acc: Set[Point], remaining: List[Point]): Option[Point] = {
       remaining match {
         case Nil => None
         case head :: next =>
@@ -39,29 +35,29 @@ object Day1 extends Day[List[String], Day1Context, Int](2016, 1) {
     visitedTwice(Set.empty, visited.toList).map(_.distanceFromOrigin)
   }
 
-  private def walk(instructions: List[String]): Vector[Location] = {
+  private def walk(instructions: List[String]): Vector[Point] = {
     val instructionPattern = "([RL])(\\d+)".r
 
     @annotation.tailrec
-    def visited(acc: Vector[Location], current: Location, facing: Int, remaining: List[String]): Vector[Location] = {
+    def visited(acc: Vector[Point], current: Point, facing: Int, remaining: List[String]): Vector[Point] = {
       remaining match {
         case Nil => acc
         case head :: tail =>
           val instructionPattern(direction, distanceString) = head
           val distance = distanceString.toInt
           val newFacing = (if (direction == "R") facing + 1 else facing + 3) % 4
-          val newLocations = (1 to distance).map { d =>
+          val newPoints = (1 to distance).map { d =>
             newFacing match {
-              case 0 => Location(current.x, current.y - d)
-              case 1 => Location(current.x + d, current.y)
-              case 2 => Location(current.x, current.y + d)
-              case 3 => Location(current.x - d, current.y)
+              case 0 => Point(current.x, current.y - d)
+              case 1 => Point(current.x + d, current.y)
+              case 2 => Point(current.x, current.y + d)
+              case 3 => Point(current.x - d, current.y)
             }
           }
-          visited(acc ++ newLocations, newLocations.last, newFacing, tail)
+          visited(acc ++ newPoints, newPoints.last, newFacing, tail)
       }
     }
 
-    visited(Vector.empty, Location(0, 0), 0, instructions)
+    visited(Vector.empty, Point(0, 0), 0, instructions)
   }
 }
