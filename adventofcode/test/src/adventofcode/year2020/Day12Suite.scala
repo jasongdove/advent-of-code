@@ -24,10 +24,6 @@ object Day12Suite extends SimpleIOSuite {
 
   simpleTest("part 2 example") {
     for {
-      inputOne <- exampleInput()
-      resultOne <- IO(process(inputOne, partTwoContext()))
-      _ <- IO(Day11.partOneResult = resultOne)
-
       input <- exampleInput()
       result <- IO(process(input, partTwoContext()))
       _ <- expect(result == Some(286)).failFast
@@ -36,10 +32,6 @@ object Day12Suite extends SimpleIOSuite {
 
   simpleTest("part 2 solution") {
     for {
-      inputOne <- realInput()
-      resultOne <- IO(process(inputOne, partOneContext()))
-      _ <- IO(Day11.partOneResult = resultOne)
-
       input <- realInput()
       result <- IO(process(input, partTwoContext()))
       _ <- expect(result == Some(42073)).failFast
