@@ -74,7 +74,7 @@ object Day14 extends Day[List[Day14Instruction], Day14Context, Long](2020, 14) {
   }
 
   private def processPartTwo(input: List[Day14Instruction]): Long = {
-    def applyMaskToAddress(mask: String, value: Long): List[Long] = {
+    def applyMaskToAddress(mask: String, value: Long): Iterable[Long] = {
       val turnOnInstructions = mask.reverse.zipWithIndex.collect {
         case (c, i) if (c == '1') => BitInstruction(i, true)
       }
@@ -89,11 +89,7 @@ object Day14 extends Day[List[Day14Instruction], Day14Context, Long](2020, 14) {
           }
       }
 
-      instructionSets
-        .map { f => partiallyMaskedValue.applyInstructions(f) }
-        .distinct
-        .sorted
-        .toList
+      instructionSets.map(partiallyMaskedValue.applyInstructions)
     }
 
     @annotation.tailrec
