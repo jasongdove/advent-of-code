@@ -56,9 +56,7 @@ object Day7 extends Day[List[Node], Day7Context, Long](2015, 7) {
   override def partTwoContext(): Option[Day7Context] = {
     def overrideB(circuit: List[Node]): List[Node] = {
       circuit.collect { node =>
-        // 16076 is the result from part one, haven't refactored to have part two depend on part one
-        // perhaps if more days use a similar pattern
-        if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(16076))
+        if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(partOneResult.get.toInt))
         else node
       }
     }
