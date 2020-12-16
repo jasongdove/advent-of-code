@@ -62,7 +62,7 @@ object Day16 extends Day[Day16Notes, Day16Context, Long](2020, 16) {
 
   private def processPartTwo(input: Day16Notes): Long = {
     val validTickets = input.nearbyTickets.filter(_.invalidFieldValues(input.fields).isEmpty)
-    identifyFields(input, validTickets)
+    identifyFields(input.fields, validTickets)
       .filter(_._2.isDeparture)
       .map { case (index, _) =>
         input.myTicket.fieldValues(index).toLong
@@ -70,18 +70,20 @@ object Day16 extends Day[Day16Notes, Day16Context, Long](2020, 16) {
       .product
   }
 
-  private def identifyFields(notes: Day16Notes, validTickets: List[Day16Ticket]): Map[Int, Day16TicketField] = {
-    val fieldOptions = (0 to notes.fields.length - 1)
+  private def identifyFields(
+    fields: List[Day16TicketField],
+    validTickets: List[Day16Ticket]
+  ): Map[Int, Day16TicketField] = {
+    val fieldOptions = (0 to fields.length - 1)
       .map { index =>
         val possibleValues = validTickets.map(_.fieldValues(index))
-        val possibleFields = notes.fields.filter(f => possibleValues.forall(v => f.containsValue(v)))
+        val possibleFields = fields.filter(f => possibleValues.forall(v => f.containsValue(v)))
         (index, possibleFields)
       }
-      .toList
       .sortBy(_._2.length)
 
     fieldOptions.foldLeft(Map[Int, Day16TicketField]()) { case (acc, (index, fieldOptions)) =>
-      val field = (fieldOptions diff acc.values.toList).head
+      val field = (fieldOptions diff acc.values.toSeq).head
       acc.updated(index, field)
     }
   }
