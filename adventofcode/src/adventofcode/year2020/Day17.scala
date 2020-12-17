@@ -9,7 +9,14 @@ object Day17CubeType {
   case object Active extends Day17CubeType
 }
 
-case class Day17PocketDimension(is4d: Boolean, elements: Map[Point4d, Day17CubeType]) {
+sealed abstract class Day17PocketDimensionCount
+
+object Day17PocketDimensionCount {
+  case object Four extends Day17PocketDimensionCount
+  case object Three extends Day17PocketDimensionCount
+}
+
+case class Day17PocketDimension(dimensions: Day17PocketDimensionCount, elements: Map[Point4d, Day17CubeType]) {
   import Day17PocketDimension._
 
   lazy val active: Map[Point4d, Day17CubeType] = elements.filter(_._2 == Day17CubeType.Active)
@@ -34,7 +41,10 @@ case class Day17PocketDimension(is4d: Boolean, elements: Map[Point4d, Day17CubeT
   }
 
   def neighborsOn(location: Point4d): Int = {
-    val checkOffsets = if (is4d) checkOffsets4d else checkOffsets3d
+    val checkOffsets = dimensions match {
+      case Day17PocketDimensionCount.Three => checkOffsets3d
+      case Day17PocketDimensionCount.Four  => checkOffsets4d
+    }
     val checks = checkOffsets.collect { case List(x, y, z, w) =>
       Point4d(location.x + x, location.y + y, location.z + z, location.w + w)
     }.distinct
@@ -43,11 +53,15 @@ case class Day17PocketDimension(is4d: Boolean, elements: Map[Point4d, Day17CubeT
 
   def elementsForIteration(): Map[Point4d, Day17CubeType] = {
     val activePoints = active.keys
+    val wRange = dimensions match {
+      case Day17PocketDimensionCount.Three => 0 to 0
+      case Day17PocketDimensionCount.Four  => activePoints.map(_.w).min - 1 to activePoints.map(_.w).max + 1
+    }
     val result = for {
       x <- activePoints.map(_.x).min - 1 to activePoints.map(_.x).max + 1
       y <- activePoints.map(_.y).min - 1 to activePoints.map(_.y).max + 1
       z <- activePoints.map(_.z).min - 1 to activePoints.map(_.z).max + 1
-      w <- if (is4d) activePoints.map(_.w).min - 1 to activePoints.map(_.w).max + 1 else 0 to 0
+      w <- wRange
     } yield Point4d(x, y, z, w) -> elements.getOrElse(Point4d(x, y, z, w), Day17CubeType.Inactive)
     result.toMap
   }
@@ -73,7 +87,7 @@ object Day17PocketDimension {
 }
 
 case class Day17Context(
-  is4d: Boolean
+  dimensions: Day17PocketDimensionCount
 )
 
 object Day17 extends Day[Map[Point4d, Day17CubeType], Day17Context, Int](2020, 17) {
@@ -88,10 +102,10 @@ object Day17 extends Day[Map[Point4d, Day17CubeType], Day17Context, Int](2020, 1
   }
 
   override def partOneContext(): Option[Day17Context] =
-    Some(Day17Context(is4d = false))
+    Some(Day17Context(Day17PocketDimensionCount.Three))
 
   override def partTwoContext(): Option[Day17Context] =
-    Some(Day17Context(is4d = true))
+    Some(Day17Context(Day17PocketDimensionCount.Four))
 
   override def process(input: Map[Point4d, Day17CubeType], context: Option[Day17Context]): Option[Int] =
     context.flatMap { ctx =>
@@ -102,7 +116,7 @@ object Day17 extends Day[Map[Point4d, Day17CubeType], Day17Context, Int](2020, 1
         remaining: List[(Point4d, Day17CubeType)]
       ): Day17PocketDimension =
         remaining match {
-          case Nil => Day17PocketDimension(ctx.is4d, acc)
+          case Nil => Day17PocketDimension(ctx.dimensions, acc)
           case (location, cubeType) :: tail =>
             val neighborsOn = start.neighborsOn(location)
             val next = cubeType match {
@@ -113,7 +127,7 @@ object Day17 extends Day[Map[Point4d, Day17CubeType], Day17Context, Int](2020, 1
             iteration(acc.updated(location, next), start, tail)
         }
 
-      val start = Day17PocketDimension(ctx.is4d, input)
+      val start = Day17PocketDimension(ctx.dimensions, input)
       val list = LazyList.iterate(start) { dimension =>
         val elements = dimension.elementsForIteration()
         iteration(elements, dimension, elements.toList)
