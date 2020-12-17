@@ -62,7 +62,7 @@ object Day8 extends Day[List[AsmInstruction], Day8Context, Int](2020, 8) {
   }
 
   private def transformInputForPartTwo(input: List[AsmInstruction]): List[List[AsmInstruction]] =
-    (0 to input.length - 1).foldLeft(List[List[AsmInstruction]]()) { case (acc, i) =>
+    input.indices.foldLeft(List[List[AsmInstruction]]()) { case (acc, i) =>
       input(i) match {
         case AsmInstruction(AsmOperation.Nop, operand) =>
           input.updated(i, AsmInstruction(AsmOperation.Jmp, operand)) +: acc

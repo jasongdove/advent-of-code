@@ -23,15 +23,15 @@ case class PasswordWithPolicy(password: String, policy: PasswordPolicy) {
 }
 
 object PasswordWithPolicy {
-  val pattern = "([0-9]+)\\-([0-9]+) ([a-z]): ([a-z]+)".r
+  private val pattern = "([0-9]+)\\-([0-9]+) ([a-z]): ([a-z]+)".r
 
-  def one(input: String) = {
+  def one(input: String): PasswordWithPolicy = {
     val pattern(min, max, letter, password) = input
     val policy = PasswordPolicyOne(min.toInt, max.toInt, letter.head)
     new PasswordWithPolicy(password, policy)
   }
 
-  def two(input: String) = {
+  def two(input: String): PasswordWithPolicy = {
     val pattern(first, second, letter, password) = input
     val policy = PasswordPolicyTwo(first.toInt, second.toInt, letter.head)
     new PasswordWithPolicy(password, policy)

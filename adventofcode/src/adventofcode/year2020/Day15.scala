@@ -23,7 +23,7 @@ object Day15 extends Day[List[Int], Day15Context, Int](2020, 15) {
     def loop(acc: Map[Int, Int], currentIndex: Int, spokenAtIndex: Int): Int = {
       if (currentIndex == target) spokenAtIndex
       else {
-        acc.lift(spokenAtIndex) match {
+        acc.get(spokenAtIndex) match {
           case None =>
             loop(acc.updated(spokenAtIndex, currentIndex), currentIndex + 1, 0)
           case Some(n) =>

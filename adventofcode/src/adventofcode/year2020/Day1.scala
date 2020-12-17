@@ -6,7 +6,7 @@ case class Day1Context(size: Int, total: Int)
 
 object Day1 extends Day[Set[Long], Day1Context, Long](2020, 1) {
   override def transformInput(lines: List[String]): Set[Long] =
-    lines.map(_.toLongOption).flatten.toSet
+    lines.flatMap(_.toLongOption).toSet
 
   override def partOneContext(): Option[Day1Context] =
     Some(Day1Context(2, 2020))

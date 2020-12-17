@@ -98,7 +98,7 @@ object Day5 extends Day[List[SeatSpecifier], Day5Context, Long](2020, 5) {
     context.flatMap(_.process(input))
 
   private def maxId(specs: List[SeatSpecifier]): Option[Long] =
-    Some(specs.flatMap(plane.seat(_)).map(_.id).max)
+    Some(specs.flatMap(plane.seat).map(_.id).max)
 
   private def mySeat(specs: List[SeatSpecifier]): Option[Long] = {
     val allSeats = (for {
@@ -107,7 +107,7 @@ object Day5 extends Day[List[SeatSpecifier], Day5Context, Long](2020, 5) {
     } yield Seat(r, c)).toList
     val allSeatIds = allSeats.map(_.id)
 
-    val bookedSeats = specs.flatMap(plane.seat(_))
+    val bookedSeats = specs.flatMap(plane.seat)
     val missingSeats = allSeats.filter(!bookedSeats.contains(_))
     val mySeat = missingSeats.find(s =>
       s.row != 0 && s.row != 127 && allSeatIds.contains(s.id + 1) && allSeatIds.contains(s.id - 1)

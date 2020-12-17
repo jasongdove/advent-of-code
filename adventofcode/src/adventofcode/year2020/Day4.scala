@@ -7,14 +7,14 @@ case class RequiredField(key: String, validator: String => Boolean)
 object RequiredField {
   def anyValidator(s: String): Boolean = s == s
 
-  def byrValidator(s: String): Boolean = s.toIntOption.map(i => i >= 1920 && i <= 2002).getOrElse(false)
-  def iyrValidator(s: String): Boolean = s.toIntOption.map(i => i >= 2010 && i <= 2020).getOrElse(false)
-  def eyrValidator(s: String): Boolean = s.toIntOption.map(i => i >= 2020 && i <= 2030).getOrElse(false)
+  def byrValidator(s: String): Boolean = s.toIntOption.exists(i => i >= 1920 && i <= 2002)
+  def iyrValidator(s: String): Boolean = s.toIntOption.exists(i => i >= 2010 && i <= 2020)
+  def eyrValidator(s: String): Boolean = s.toIntOption.exists(i => i >= 2020 && i <= 2030)
   def hgtValidator(s: String): Boolean = {
     val validCm =
-      s.endsWith("cm") && s.substring(0, s.length - 2).toIntOption.map(i => i >= 150 && i <= 193).getOrElse(false)
+      s.endsWith("cm") && s.substring(0, s.length - 2).toIntOption.exists(i => i >= 150 && i <= 193)
     val validIn =
-      s.endsWith("in") && s.substring(0, s.length - 2).toIntOption.map(i => i >= 59 && i <= 76).getOrElse(false)
+      s.endsWith("in") && s.substring(0, s.length - 2).toIntOption.exists(i => i >= 59 && i <= 76)
     validCm || validIn
   }
 
@@ -32,8 +32,7 @@ case class PassportField(key: String, value: String) {
   def isValid(required: List[RequiredField]): Boolean =
     required
       .find(_.key == key)
-      .map(_.validator(value))
-      .getOrElse(false)
+      .exists(_.validator(value))
 }
 
 case class Passport(fields: List[PassportField])
@@ -96,7 +95,7 @@ object Day4 extends Day[List[Passport], Day4Context, Long](2020, 4) {
       passports.count { passport =>
         val requiredFields = passport.fields.filter(f => ctx.required.exists(_.key == f.key))
         val missingRequired = requiredFields.length != ctx.required.length
-        val unknown = passport.fields.exists(f => !allKnown.exists(_ == f.key))
+        val unknown = passport.fields.exists(f => !allKnown.contains(f.key))
 
         !unknown && !missingRequired && requiredFields.count(_.isValid(ctx.required)) == requiredFields.length
       }.toLong

@@ -11,7 +11,7 @@ object Day14Instruction {
   case class SetMask(value: String) extends Day14Instruction
   case class Assign(address: Long, value: Long) extends Day14Instruction
 
-  def from(line: String) = {
+  def from(line: String): Day14Instruction = {
     line match {
       case maskPattern(mask)             => SetMask(mask)
       case assignPattern(address, value) => Assign(address.toLong, value.toLong)
@@ -49,8 +49,8 @@ object Day14 extends Day[List[Day14Instruction], Day14Context, Long](2020, 14) {
   private def processPartOne(input: List[Day14Instruction]): Long = {
     def applyMaskToValue(mask: String, value: Long): Long = {
       val bitInstructions = mask.reverse.zipWithIndex.collect {
-        case (c, i) if c == '1' => BitInstruction(i, true)
-        case (c, i) if c == '0' => BitInstruction(i, false)
+        case (c, i) if c == '1' => BitInstruction(i, turnOn = true)
+        case (c, i) if c == '0' => BitInstruction(i, turnOn = false)
       }
 
       value.applyInstructions(bitInstructions)
@@ -70,13 +70,13 @@ object Day14 extends Day[List[Day14Instruction], Day14Context, Long](2020, 14) {
       }
     }
 
-    evaluate("", Map.empty, input).map(_._2).sum
+    evaluate("", Map.empty, input).values.sum
   }
 
   private def processPartTwo(input: List[Day14Instruction]): Long = {
     def applyMaskToAddress(mask: String, value: Long): Iterable[Long] = {
       val turnOnInstructions = mask.reverse.zipWithIndex.collect {
-        case (c, i) if (c == '1') => BitInstruction(i, true)
+        case (c, i) if (c == '1') => BitInstruction(i, turnOn = true)
       }
       val partiallyMaskedValue = value.applyInstructions(turnOnInstructions)
 
@@ -109,7 +109,7 @@ object Day14 extends Day[List[Day14Instruction], Day14Context, Long](2020, 14) {
           }
       }
     }
-    loop("", Map.empty, input).map(_._2).sum
+    loop("", Map.empty, input).values.sum
   }
 
 }

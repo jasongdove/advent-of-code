@@ -14,11 +14,11 @@ case class SkiMap(rows: List[MapRow])
 
 object SkiMap {
   def from(lines: List[String]): SkiMap = {
-    new SkiMap(lines.map(row(_)))
+    SkiMap(lines.map(row))
   }
 
   def row(line: String): MapRow = {
-    new MapRow(line.map(square(_)).toList)
+    MapRow(line.map(square).toList)
   }
 
   def square(char: Char): MapSquare =
@@ -43,12 +43,12 @@ object Day3 extends Day[SkiMap, Day3Context, Long](2020, 3) {
 
   override def process(map: SkiMap, context: Option[Day3Context]): Option[Long] =
     context.map { ctx =>
-      ctx.slopes.map(slope => countTrees(map, slope)).reduce(_ * _)
+      ctx.slopes.map(slope => countTrees(map, slope)).product
     }
 
   private def countTrees(map: SkiMap, slope: Slope) = {
     val height = map.rows.length
-    val width = map.rows(0).squares.length
+    val width = map.rows.head.squares.length
 
     @annotation.tailrec
     def inner(acc: Long, x: Int, y: Int): Long =

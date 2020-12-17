@@ -3,13 +3,13 @@ package adventofcode.year2020
 import adventofcode.Day
 
 case class Day16TicketField(field: String, range1: Range, range2: Range) {
-  val isDeparture = field.startsWith("departure")
-  def containsValue(value: Int) = range1.contains(value) || range2.contains(value)
+  val isDeparture: Boolean = field.startsWith("departure")
+  def containsValue(value: Int): Boolean = range1.contains(value) || range2.contains(value)
 }
 
 object Day16TicketField {
-  val pattern = "([a-z\\s]+): (\\d+)-(\\d+) or (\\d+)-(\\d+)".r
-  def from(line: String) = {
+  private val pattern = "([a-z\\s]+): (\\d+)-(\\d+) or (\\d+)-(\\d+)".r
+  def from(line: String): Day16TicketField = {
     val pattern(field, r11, r12, r21, r22) = line
     Day16TicketField(field, Range.inclusive(r11.toInt, r12.toInt), Range.inclusive(r21.toInt, r22.toInt))
   }
@@ -22,7 +22,7 @@ case class Day16Ticket(fieldValues: List[Int]) {
 }
 
 object Day16Ticket {
-  def from(line: String) = {
+  def from(line: String): Day16Ticket = {
     val values = line.split(",").map(_.toInt).toList
     Day16Ticket(values)
   }
@@ -31,7 +31,7 @@ object Day16Ticket {
 case class Day16Notes(fields: List[Day16TicketField], myTicket: Day16Ticket, nearbyTickets: List[Day16Ticket])
 
 object Day16Notes {
-  def from(lines: List[String]) = {
+  def from(lines: List[String]): Day16Notes = {
     val fields = lines(0).split("\n").map(Day16TicketField.from).toList
     val myTicket = Day16Ticket.from(lines(1).split("\n").last)
     val nearbyTickets = lines(2).split("\n").tail.map(Day16Ticket.from).toList
@@ -74,7 +74,7 @@ object Day16 extends Day[Day16Notes, Day16Context, Long](2020, 16) {
     fields: List[Day16TicketField],
     validTickets: List[Day16Ticket]
   ): Map[Int, Day16TicketField] = {
-    val fieldOptions = (0 to fields.length - 1)
+    val fieldOptions = fields.indices
       .map { index =>
         val possibleValues = validTickets.map(_.fieldValues(index))
         val possibleFields = fields.filter(f => possibleValues.forall(v => f.containsValue(v)))
