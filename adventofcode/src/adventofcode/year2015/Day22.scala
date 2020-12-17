@@ -3,8 +3,8 @@ package adventofcode.year2015
 import adventofcode.Day
 
 case class Wizard(hitPoints: Int, mana: Int, armor: Int) {
-  def spendMana(m: Int) = Wizard(hitPoints, mana - m, armor)
-  def takeDamage(damage: Int) = Wizard(hitPoints - Math.max(damage - armor, 1), mana, armor)
+  def spendMana(m: Int): Wizard = Wizard(hitPoints, mana - m, armor)
+  def takeDamage(damage: Int): Wizard = Wizard(hitPoints - Math.max(damage - armor, 1), mana, armor)
 }
 
 case class Day22Context(difficulty: Wizard => Wizard)
@@ -12,10 +12,10 @@ case class Day22Context(difficulty: Wizard => Wizard)
 object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
 
   implicit class Day22Boss(boss: Boss) {
-    def takeDamage(damage: Int) = Boss(boss.hitPoints - Math.max(damage - boss.defense, 1), boss.damage, boss.defense)
+    def takeDamage(damage: Int): Boss = Boss(boss.hitPoints - Math.max(damage - boss.defense, 1), boss.damage, boss.defense)
   }
 
-  sealed abstract trait GameResult
+  sealed trait GameResult
 
   object GameResult {
     case object InProgress extends GameResult
@@ -96,7 +96,7 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
     val hpPattern = "Hit Points: (\\d+)".r
     val dmgPattern = "Damage: (\\d+)".r
 
-    val hpPattern(hitPoints) = lines(0)
+    val hpPattern(hitPoints) = lines.head
     val dmgPattern(damage) = lines(1)
 
     Boss(hitPoints.toInt, damage.toInt, 0)
@@ -113,7 +113,7 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
 
     context.map { ctx =>
       val wizard = Wizard(50, 500, 0)
-      val newGameState = GameState(true, wizard, input, List.empty, Vector.empty, GameResult.InProgress)
+      val newGameState = GameState(isWizardTurn = true, wizard, input, List.empty, Vector.empty, GameResult.InProgress)
 
       generateSpellQueues().flatMap { sq =>
         val gameState = evaluate(newGameState, sq, ctx.difficulty)
@@ -140,7 +140,7 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
       val nextWizard = state.activeTimers.foldLeft(state.wizard)((w, timer) => timer.spell.tick(w))
       val nextBoss = state.activeTimers.foldLeft(state.boss)((b, timer) => timer.spell.tick(b))
 
-      (0 to state.activeTimers.length - 1).foldLeft(state.updated(nextWizard, nextBoss)) {
+      state.activeTimers.indices.foldLeft(state.updated(nextWizard, nextBoss)) {
         case (s @ GameState(_, w, _, timers, _, _), timerIndex) =>
           val timer = timers(timerIndex)
           val nextTimer = SpellTimer(timer.spell, timer.timer - 1)

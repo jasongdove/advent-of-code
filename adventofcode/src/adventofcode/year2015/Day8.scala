@@ -2,6 +2,8 @@ package adventofcode.year2015
 
 import adventofcode.Day
 
+import scala.annotation.tailrec
+
 case class Day8Context(process: String => String)
 
 object Day8 extends Day[List[String], Day8Context, Long](2015, 8) {
@@ -22,29 +24,31 @@ object Day8 extends Day[List[String], Day8Context, Long](2015, 8) {
     val hex =
       List('a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
     val input = s.replaceAll("^\"|\"$", "")
+    @tailrec
     def loop(isEscaped: Boolean, buffer: Seq[Char], remaining: Seq[Char]): Seq[Char] = {
       if (isEscaped) {
         remaining match {
-          case Seq('"', tail @ _*)  => loop(false, buffer ++ Seq('"'), tail)
-          case Seq('\\', tail @ _*) => loop(false, buffer ++ Seq('\\'), tail)
+          case Seq('"', tail @ _*)  => loop(isEscaped = false, buffer ++ Seq('"'), tail)
+          case Seq('\\', tail @ _*) => loop(isEscaped = false, buffer ++ Seq('\\'), tail)
           case Seq('x', one, two, tail @ _*) =>
             if (hex.contains(one) && hex.contains(two))
-              loop(false, buffer ++ Seq('_'), tail)
+              loop(isEscaped = false, buffer ++ Seq('_'), tail)
             else
-              loop(false, buffer ++ Seq('x'), Seq(one, two) ++ tail)
+              loop(isEscaped = false, buffer ++ Seq('x'), Seq(one, two) ++ tail)
         }
       } else {
         remaining match {
-          case Seq('\\', tail @ _*) => loop(true, buffer, tail)
-          case Seq(head, tail @ _*) => loop(false, buffer ++ Seq(head), tail)
+          case Seq('\\', tail @ _*) => loop(isEscaped = true, buffer, tail)
+          case Seq(head, tail @ _*) => loop(isEscaped = false, buffer ++ Seq(head), tail)
           case _                    => buffer
         }
       }
     }
-    loop(false, Seq.empty, input).mkString
+    loop(isEscaped = false, Seq.empty, input).mkString
   }
 
   private def escape(s: String): String = {
+    @tailrec
     def loop(buffer: Seq[Char], remaining: Seq[Char]): Seq[Char] = {
       remaining match {
         case Seq('\"', tail @ _*) => loop(buffer ++ Seq('\\', '\"'), tail)

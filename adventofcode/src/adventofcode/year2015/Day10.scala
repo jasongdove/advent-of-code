@@ -27,17 +27,15 @@ object Day10 extends Day[String, Day10Context, Long](2015, 10) {
     @annotation.tailrec
     def loop(current: Char, list: List[Char], count: Int): String = {
       list match {
-        case Nil => {
+        case Nil =>
           sb.append(count)
           sb.append(current)
           sb.toString
-        }
         case head :: tail if head == current => loop(current, tail, count + 1)
-        case head :: tail => {
+        case head :: tail =>
           sb.append(count)
           sb.append(current)
           loop(head, tail, 1)
-        }
       }
     }
     loop(input.charAt(0), input.toList, 0)

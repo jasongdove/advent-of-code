@@ -9,7 +9,7 @@ object Machine {
   private val replacementPattern = "(.*) => (.*)".r
 
   def from(lines: List[String]): Machine = {
-    val replacementLines = lines(0).split("\n").toList
+    val replacementLines = lines.head.split("\n").toList
     val start = lines(1).trim
     val replacements = replacementLines.map { line =>
       val replacementPattern(from, to) = line

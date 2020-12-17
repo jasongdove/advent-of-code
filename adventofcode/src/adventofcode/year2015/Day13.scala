@@ -34,11 +34,10 @@ object Day13 extends Day[List[Edge[String]], Day13Context, Long](2015, 13) {
     def buildEdges(edges: Map[(String, String), Int], pairs: List[Pair]): List[Edge[String]] = {
       pairs match {
         case Nil => edges.map(e => Edge(e._1._1, e._1._2, e._2)).toList
-        case head :: tail => {
+        case head :: tail =>
           val sorted = if (head.left > head.right) (head.left, head.right) else (head.right, head.left)
-          val weight = edges.get(sorted).getOrElse(0)
+          val weight = edges.getOrElse(sorted, 0)
           buildEdges(edges.updated(sorted, head.weight + weight), tail)
-        }
       }
     }
 

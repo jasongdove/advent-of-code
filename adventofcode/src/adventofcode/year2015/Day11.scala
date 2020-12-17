@@ -6,9 +6,9 @@ case class Day11Context(iterations: Int)
 
 object Day11 extends Day[String, Day11Context, String](2015, 11) {
   // format: off
-  val pairs = List("aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj", "kk", "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", "ww", "xx", "yy", "zz")
-  val alphabet = "abcdefghijklmnopqrstuvwxyz"
-  val triples = Range(0, 24).map(i => alphabet.substring(i, i + 3)).toList
+  private val pairs = List("aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj", "kk", "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", "ww", "xx", "yy", "zz")
+  private val alphabet = "abcdefghijklmnopqrstuvwxyz"
+  private val triples = Range(0, 24).map(i => alphabet.substring(i, i + 3)).toList
   // format: on
 
   override def transformInput(lines: List[String]): String =

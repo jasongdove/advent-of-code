@@ -17,7 +17,7 @@ case class Box(length: Long, width: Long, height: Long) {
 }
 
 object Box {
-  val pattern = "(\\d+)x(\\d+)x(\\d+)".r
+  private val pattern = "(\\d+)x(\\d+)x(\\d+)".r
 
   def from(line: String): Box = {
     val pattern(length, width, height) = line

@@ -2,6 +2,8 @@ package adventofcode.year2015
 
 import adventofcode.Day
 
+import scala.util.matching.Regex
+
 case class GridRange(x1: Int, y1: Int, x2: Int, y2: Int)
 
 sealed abstract class Action
@@ -15,7 +17,7 @@ object Action {
 case class SantaInstruction(action: Action, range: GridRange)
 
 object SantaInstruction {
-  val pattern = "(.*) (\\d+),(\\d+) through (\\d+),(\\d+)".r
+  val pattern: Regex = "(.*) (\\d+),(\\d+) through (\\d+),(\\d+)".r
   def from(line: String): SantaInstruction = {
     val pattern(actionText, x1, y1, x2, y2) = line
     val action = actionText match {

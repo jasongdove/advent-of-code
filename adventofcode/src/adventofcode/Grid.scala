@@ -10,8 +10,8 @@ case class Grid[A](rows: Int, columns: Int, data: Map[GridLocation, A]) {
 object Grid {
   def fill[A](rows: Int, columns: Int)(e: A): Grid[A] = {
     val data = for {
-      r <- (0 to rows - 1)
-      c <- (0 to columns - 1)
+      r <- 0 until rows
+      c <- 0 until columns
     } yield GridLocation(r, c)
     Grid(rows, columns, data.map(_ -> e).toMap)
   }

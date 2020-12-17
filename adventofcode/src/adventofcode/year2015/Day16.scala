@@ -84,13 +84,13 @@ object Day16 extends Day[List[Aunt], Day16Context, Int](2015, 16) {
 
     def minScore(selector: Aunt => Option[Int]) =
       selector(aunt) match {
-        case Some(value) => if (selector(referenceAunt).map(_ < value).getOrElse(false)) 2 else 0
+        case Some(value) => if (selector(referenceAunt).exists(_ < value)) 2 else 0
         case None        => 1
       }
 
     def maxScore(selector: Aunt => Option[Int]) =
       selector(aunt) match {
-        case Some(value) => if (selector(referenceAunt).map(_ > value).getOrElse(false)) 2 else 0
+        case Some(value) => if (selector(referenceAunt).exists(_ > value)) 2 else 0
         case None        => 1
       }
 

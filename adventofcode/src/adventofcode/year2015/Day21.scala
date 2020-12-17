@@ -2,7 +2,7 @@ package adventofcode.year2015
 
 import adventofcode.Day
 
-sealed abstract trait Equipment {
+sealed trait Equipment {
   def name: String
   def cost: Int
   def damage: Int
@@ -14,9 +14,9 @@ case class Armor(name: String, cost: Int, damage: Int, armor: Int) extends Equip
 case class Ring(name: String, cost: Int, damage: Int, armor: Int) extends Equipment
 
 case class Player(hitPoints: Int, weapon: Weapon, armor: Option[Armor], rings: List[Ring]) {
-  val damage = weapon.damage + armor.map(_.damage).getOrElse(0) + rings.map(_.damage).sum
-  val defense = weapon.armor + armor.map(_.armor).getOrElse(0) + rings.map(_.armor).sum
-  val cost = weapon.cost + armor.map(_.cost).sum + rings.map(_.cost).sum
+  val damage: Int = weapon.damage + armor.map(_.damage).getOrElse(0) + rings.map(_.damage).sum
+  val defense: Int = weapon.armor + armor.map(_.armor).getOrElse(0) + rings.map(_.armor).sum
+  val cost: Int = weapon.cost + armor.map(_.cost).sum + rings.map(_.cost).sum
 }
 
 case class Boss(hitPoints: Int, damage: Int, defense: Int)
@@ -57,7 +57,7 @@ object Day21 extends Day[Boss, Day21Context, Int](2015, 21) {
     val dmgPattern = "Damage: (\\d+)".r
     val defPattern = "Armor: (\\d+)".r
 
-    val hpPattern(hitPoints) = lines(0)
+    val hpPattern(hitPoints) = lines.head
     val dmgPattern(damage) = lines(1)
     val defPattern(defense) = lines(2)
 
@@ -97,6 +97,6 @@ object Day21 extends Day[Boss, Day21Context, Int](2015, 21) {
       }
     }
 
-    playRound(player.hitPoints, boss.hitPoints, true)
+    playRound(player.hitPoints, boss.hitPoints, isPlayerRound = true)
   }
 }

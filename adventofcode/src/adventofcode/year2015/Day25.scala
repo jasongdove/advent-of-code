@@ -11,7 +11,7 @@ object Day25 extends Day[(Int, Int), Nothing, Long](2015, 25) {
   }
 
   override def process(input: (Int, Int), context: Option[Nothing]): Option[Long] =
-      Some(codeForNumber((numberForCoordinates _).tupled(input)))
+    Some(codeForNumber((numberForCoordinates _).tupled(input)))
 
   private def numberForCoordinates(row: Int, col: Int): Int = {
     val rowStarts = LazyList.iterate((1, 1)) { case (num, acc) => (num + acc, acc + 1) }

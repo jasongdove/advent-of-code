@@ -38,9 +38,9 @@ abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOA
     IO(transform(os.read(os.resource / yearNumber.toString / resourceName).split(splitOn()).toList))
 
   def transformInput(lines: List[String]): A
-  def exampleInput(partNumber: PartNumber = PartNumber.Unspecified) =
+  def exampleInput(partNumber: PartNumber = PartNumber.Unspecified): IO[A] =
     linesOfInput(ResourceType.Example, partNumber)(transformInput)
-  def realInput(partNumber: PartNumber = PartNumber.Unspecified) =
+  def realInput(partNumber: PartNumber = PartNumber.Unspecified): IO[A] =
     linesOfInput(ResourceType.Real, partNumber)(transformInput)
 
   def process(input: A, context: Option[B]): Option[C]

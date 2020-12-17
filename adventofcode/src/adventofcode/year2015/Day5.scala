@@ -15,7 +15,7 @@ object Day5 extends Day[List[String], Day5Context, Long](2015, 5) {
 
   override def process(input: List[String], context: Option[Day5Context]): Option[Long] =
     context.map { ctx =>
-      input.filter(ctx.classifier).length.toLong
+      input.count(ctx.classifier).toLong
     }
 
   private def isNicePartOne(str: String): Boolean = {
@@ -35,7 +35,7 @@ object Day5 extends Day[List[String], Day5Context, Long](2015, 5) {
     }
 
     def noBadStrings(str: String): Boolean =
-      badStrings.foldLeft(true)(_ && !str.contains(_))
+      badStrings.forall(!str.contains(_))
 
     threeVowels(str) && doubleLetter(str) && noBadStrings(str)
   }

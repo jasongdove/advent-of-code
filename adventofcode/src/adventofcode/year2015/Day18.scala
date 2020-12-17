@@ -3,9 +3,9 @@ package adventofcode.year2015
 import adventofcode.Day
 
 case class AnimatedGrid(elements: Map[(Int, Int), Boolean]) {
-  val size = elements.keys.map(_._1).max
+  val size: Int = elements.keys.map(_._1).max
 
-  def neighborsOn(row: Int, col: Int) = {
+  def neighborsOn(row: Int, col: Int): Int = {
     val checks = List(
       (row - 1, col - 1),
       (row, col - 1),
@@ -25,15 +25,12 @@ case class Day18Context(steps: Int, transform: AnimatedGrid => AnimatedGrid)
 object Day18 extends Day[AnimatedGrid, Day18Context, Int](2015, 18) {
 
   override def transformInput(lines: List[String]): AnimatedGrid = {
-    val gridMap = lines.zipWithIndex
-      .map { case (line, row) =>
-        line.zipWithIndex.map {
-          case ('#', col) => ((row, col), true)
-          case (_, col)   => ((row, col), false)
-        }
+    val gridMap = lines.zipWithIndex.flatMap { case (line, row) =>
+      line.zipWithIndex.map {
+        case ('#', col) => ((row, col), true)
+        case (_, col)   => ((row, col), false)
       }
-      .flatten
-      .toMap
+    }.toMap
     AnimatedGrid(gridMap)
   }
 

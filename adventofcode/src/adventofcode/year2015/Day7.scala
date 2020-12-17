@@ -2,6 +2,8 @@ package adventofcode.year2015
 
 import adventofcode.Day
 
+import scala.annotation.tailrec
+
 sealed abstract class Source
 
 case class Wire(identifier: String) extends Source
@@ -19,14 +21,14 @@ object Gate {
 case class Node(wire: Wire, source: Source)
 
 object Node {
-  val assignmentPattern = "([a-z]+) -> ([a-z]+)".r
-  val valuePattern = "(\\d+) -> ([a-z]+)".r
-  val andPattern = "([a-z]+) AND ([a-z]+) -> ([a-z]+)".r
-  val valueAndPattern = "(\\d+) AND ([a-z]+) -> ([a-z]+)".r
-  val orPattern = "([a-z]+) OR ([a-z]+) -> ([a-z]+)".r
-  val leftShiftPattern = "([a-z]+) LSHIFT (\\d+) -> ([a-z]+)".r
-  val rightShiftPattern = "([a-z]+) RSHIFT (\\d+) -> ([a-z]+)".r
-  val notPattern = "NOT ([a-z]+) -> ([a-z]+)".r
+  private val assignmentPattern = "([a-z]+) -> ([a-z]+)".r
+  private val valuePattern = "(\\d+) -> ([a-z]+)".r
+  private val andPattern = "([a-z]+) AND ([a-z]+) -> ([a-z]+)".r
+  private val valueAndPattern = "(\\d+) AND ([a-z]+) -> ([a-z]+)".r
+  private val orPattern = "([a-z]+) OR ([a-z]+) -> ([a-z]+)".r
+  private val leftShiftPattern = "([a-z]+) LSHIFT (\\d+) -> ([a-z]+)".r
+  private val rightShiftPattern = "([a-z]+) RSHIFT (\\d+) -> ([a-z]+)".r
+  private val notPattern = "NOT ([a-z]+) -> ([a-z]+)".r
 
   def from(line: String): Node = {
     line match {
@@ -72,6 +74,7 @@ object Day7 extends Day[List[Node], Day7Context, Long](2015, 7) {
     }
 
   private def emulate(nodes: List[Node]) = {
+    @tailrec
     def iterate(state: Map[String, Int], remaining: Seq[Node]): Map[String, Int] = {
       if (remaining.isEmpty) state
       else {

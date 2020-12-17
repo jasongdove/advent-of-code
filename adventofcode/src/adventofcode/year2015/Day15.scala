@@ -5,8 +5,9 @@ import adventofcode.Day
 case class Ingredient(name: String, capacity: Int, durability: Int, flavor: Int, texture: Int, calories: Int)
 
 object Ingredient {
+  private val pattern =
+    "(.*): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)".r
   def from(line: String): Ingredient = {
-    val pattern = "(.*): capacity (-?\\d+), durability (-?\\d+), flavor (-?\\d+), texture (-?\\d+), calories (-?\\d+)".r
     val pattern(name, capacity, durability, flavor, texture, calories) = line
     Ingredient(name, capacity.toInt, durability.toInt, flavor.toInt, texture.toInt, calories.toInt)
   }

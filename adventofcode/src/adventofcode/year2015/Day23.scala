@@ -16,12 +16,12 @@ object AsmOperation {
 case class AsmInstruction(operation: AsmOperation, register: Option[Char], operand: Option[Int])
 
 object AsmInstruction {
-  val halfPattern = "hlf ([ab])".r
-  val triplePattern = "tpl ([ab])".r
-  val incrementPattern = "inc ([ab])".r
-  val jumpPattern = "jmp ([\\+-]?\\d+)".r
-  val jumpEvenPattern = "jie ([ab]), ([\\+-]?\\d+)".r
-  val jumpOnePattern = "jio ([ab]), ([\\+-]?\\d+)".r
+  private val halfPattern = "hlf ([ab])".r
+  private val triplePattern = "tpl ([ab])".r
+  private val incrementPattern = "inc ([ab])".r
+  private val jumpPattern = "jmp ([\\+-]?\\d+)".r
+  private val jumpEvenPattern = "jie ([ab]), ([\\+-]?\\d+)".r
+  private val jumpOnePattern = "jio ([ab]), ([\\+-]?\\d+)".r
 
   def from(line: String): AsmInstruction =
     line match {
