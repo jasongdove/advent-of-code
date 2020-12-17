@@ -3,14 +3,14 @@ package adventofcode.year2016
 import adventofcode.Day
 
 case class Day4Room(encryptedName: String, sectorId: Int, checksum: List[Char]) {
-  val isValid = {
+  val isValid: Boolean = {
     val checksumFrequencies = checksum.map(c => (c -> encryptedName.count(_ == c)))
     val encryptedFrequencies =
       encryptedName.groupMapReduce(identity)(_ => 1)(_ + _).toList.sortBy(f => (-f._2, f._1)).take(5)
     checksumFrequencies == encryptedFrequencies
   }
 
-  val decryptedName = encryptedName.map { c =>
+  val decryptedName: String = encryptedName.map { c =>
     c match {
       case '-' => ' '
       case _   => ('a' + ((c - 'a' + sectorId) % 26)).toChar
@@ -20,7 +20,7 @@ case class Day4Room(encryptedName: String, sectorId: Int, checksum: List[Char]) 
 case class Day4Context(process: List[Day4Room] => Option[Int])
 
 object Day4Room {
-  val pattern = "([a-z\\-]+)-([0-9]+)\\[([a-z]{5})\\]".r
+  private val pattern = "([a-z\\-]+)-([0-9]+)\\[([a-z]{5})\\]".r
   def from(line: String): Day4Room = {
     val pattern(name, sector, checksum) = line
     Day4Room(name, sector.toInt, checksum.toList)

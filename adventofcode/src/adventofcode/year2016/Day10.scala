@@ -2,8 +2,10 @@ package adventofcode.year2016
 
 import adventofcode.Day
 
+import scala.annotation.tailrec
+
 case class Day10Bot(chips: Set[Int]) {
-  val canProceed = chips.size == 2
+  val canProceed: Boolean = chips.size == 2
 }
 
 object Day10Bot {
@@ -72,7 +74,7 @@ object Day10 extends Day[List[Day10Instruction], Day10Context, Long](2016, 10) {
       val instructions = input diff values
       val bots = values
         .foldLeft(Map[Int, Day10Bot]()) { case (bots, v) =>
-          val chips = bots.lift(v.target).map(_.chips).getOrElse(Set.empty)
+          val chips = bots.get(v.target).map(_.chips).getOrElse(Set.empty)
           bots.updated(v.target, Day10Bot(chips + v.value))
         }
       val (finalBots, outputs, result) = evaluate(bots, ctx.stopWhen, instructions)
@@ -84,6 +86,7 @@ object Day10 extends Day[List[Day10Instruction], Day10Context, Long](2016, 10) {
     stopWhen: Map[Int, Day10Bot] => Option[Day10Bot],
     instructions: List[Day10Instruction]
   ): (Map[Int, Day10Bot], Map[Int, Int], Option[Day10Bot]) = {
+    @tailrec
     def loop(
       bots: Map[Int, Day10Bot],
       outputs: Map[Int, Int],
@@ -118,7 +121,7 @@ object Day10 extends Day[List[Day10Instruction], Day10Context, Long](2016, 10) {
       instruction match {
         case Day10Instruction.Bot(source, selector, target) =>
           val bs = bots(source)
-          val chips = bots.lift(target).map(_.chips).getOrElse(Set.empty)
+          val chips = bots.get(target).map(_.chips).getOrElse(Set.empty)
           val updatedTarget = bots.updated(target, Day10Bot(chips + selector(bs)))
           val updatedSource = updatedTarget.updated(source, Day10Bot(bs.chips - selector(bs)))
           (updatedSource, outputs)

@@ -10,8 +10,8 @@ object Day8Instruction {
   case class Rect(width: Int, height: Int) extends Day8Instruction {
     def apply(grid: Grid[Boolean]): Grid[Boolean] = {
       val locations = for {
-        r <- (0 to height - 1)
-        c <- (0 to width - 1)
+        r <- 0 until height
+        c <- 0 until width
       } yield GridLocation(r, c)
       locations.foldLeft(grid) { case (g, l) => g.updated(l, true) }
     }
@@ -20,7 +20,7 @@ object Day8Instruction {
   case class RotateColumn(column: Int, by: Int) extends Day8Instruction {
     def apply(grid: Grid[Boolean]): Grid[Boolean] = {
       val locations = for {
-        r <- (0 to grid.rows - 1)
+        r <- 0 until grid.rows
       } yield (GridLocation((r + by) % grid.rows, column) -> grid(r, column))
       locations.foldLeft(grid) { case (g, l) => g.updated(l._1, l._2) }
     }
@@ -29,7 +29,7 @@ object Day8Instruction {
   case class RotateRow(row: Int, by: Int) extends Day8Instruction {
     def apply(grid: Grid[Boolean]): Grid[Boolean] = {
       val locations = for {
-        c <- (0 to grid.columns - 1)
+        c <- 0 until grid.columns
       } yield (GridLocation(row, (c + by) % grid.columns) -> grid(row, c))
       locations.foldLeft(grid) { case (g, l) => g.updated(l._1, l._2) }
     }

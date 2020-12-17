@@ -3,8 +3,8 @@ package adventofcode.year2016
 import adventofcode.Day
 
 case class Day7IPAddress(supernetSequences: List[String], hypernetSequences: List[String]) {
-  lazy val supportsTls = hypernetSequences.forall(s => !containsAbba(s)) && supernetSequences.exists(s => containsAbba(s))
-  lazy val supportsSsl = hypernetSequences.exists(containsBab)
+  lazy val supportsTls: Boolean = hypernetSequences.forall(s => !containsAbba(s)) && supernetSequences.exists(s => containsAbba(s))
+  lazy val supportsSsl: Boolean = hypernetSequences.exists(containsBab)
 
   private lazy val abas: List[String] =
     supernetSequences.flatMap(_.sliding(3).filter(isAba).toList)
@@ -20,7 +20,7 @@ case class Day7IPAddress(supernetSequences: List[String], hypernetSequences: Lis
 }
 
 object Day7IPAddress {
-  val bracketPattern = "\\[([a-z]+)\\]".r
+  private val bracketPattern = "\\[([a-z]+)\\]".r
   def from(line: String): Day7IPAddress = {
     val hypernetSequences = bracketPattern.findAllMatchIn(line).map(_.group(0)).toList
     val supernetSequences = bracketPattern.replaceAllIn(line, _ => "_").split("_").toList
