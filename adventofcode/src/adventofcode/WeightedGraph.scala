@@ -12,13 +12,26 @@ case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
   def areConnected(start: A, finish: A): Boolean = {
     if (start == finish) false
     else {
-      def loop(current: A): Boolean = {
-        if (!adj.keySet.contains(current) || adj(current).isEmpty) false
-        else if (adj(current).exists(_.value == finish)) true
-        else adj(current).exists(t => loop(t.value))
+      @annotation.tailrec
+      def loop(visited: List[A], work: List[A]): Boolean = {
+        work match {
+          case Nil => false
+          case head :: next =>
+            val nextVisited = visited :+ head
+            adj.lift(head) match {
+              case None      => loop(nextVisited, next)
+              case Some(Nil) => loop(nextVisited, next)
+              case Some(targets) =>
+                if (targets.exists(_.value == finish)) true
+                else {
+                  val nextWork = next ++ targets.map(_.value).filterNot(nextVisited.contains)
+                  loop(nextVisited, nextWork)
+                }
+            }
+        }
       }
 
-      loop(start)
+      loop(List(start), List(start))
     }
   }
 
@@ -30,8 +43,8 @@ case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
         case None => acc
         case Some(targets) =>
           acc ++ targets.foldLeft(acc) { case (a, target) =>
-            val current = if (a.contains(node)) a(node) else 0
-            a.updated(node, current + a(target.value))
+            val current = a.lift(node).getOrElse(0L)
+            a.updated(node, current + a.lift(target.value).getOrElse(0L))
           }
       }
     }
