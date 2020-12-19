@@ -60,8 +60,7 @@ object Day18 extends Day[List[String], Day18Context, Long](2020, 18) {
       remaining match {
         case Nil => (output ++ operators).toList
         case (n: Number) :: next =>
-          val nextOutput = output :+ n
-          loop(nextOutput, operators, next)
+          loop(output :+ n, operators, next)
         case OpenParen :: next =>
           loop(output, OpenParen :: operators, next)
         case CloseParen :: next =>
@@ -69,8 +68,9 @@ object Day18 extends Day[List[String], Day18Context, Long](2020, 18) {
           val stack = operators.slice(operators.indexOf(OpenParen) + 1, operators.length)
           loop(output ++ toOutput, stack, next)
         case (o: Operator) :: next =>
-          val toOutput =
-            operators.takeWhile(op => op != OpenParen && precedence.getOrElse(op, 0) >= precedence.getOrElse(o, 0))
+          val toOutput = operators.takeWhile { op =>
+            op != OpenParen && precedence.getOrElse(op, 0) >= precedence.getOrElse(o, 0)
+          }
           val stack = o :: operators.slice(toOutput.length, operators.length)
           loop(output ++ toOutput, stack, next)
       }
@@ -78,7 +78,7 @@ object Day18 extends Day[List[String], Day18Context, Long](2020, 18) {
     loop(Vector.empty, List.empty, tokens)
   }
 
-  private def evaluate(rpnDay18Tokens: List[Day18Token]): Long = {
+  private def evaluate(rpnTokens: List[Day18Token]): Long = {
     @tailrec
     def loop(acc: List[Long], remaining: List[Day18Token]): Long = {
       remaining match {
@@ -96,6 +96,6 @@ object Day18 extends Day[List[String], Day18Context, Long](2020, 18) {
           loop(acc, next)
       }
     }
-    loop(List.empty, rpnDay18Tokens)
+    loop(List.empty, rpnTokens)
   }
 }
