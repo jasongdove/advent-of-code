@@ -6,4 +6,10 @@ package object utils {
     def rotate180(): List[List[A]] = rotate90().rotate90()
     def rotate270(): List[List[A]] = list.map(_.reverse).transpose
   }
+
+  implicit class StringListRotator(list: List[String]) {
+    def rotate90(): List[String] = list.map(_.toList).rotate90().map(_.mkString)
+    def rotate180(): List[String] = list.map(_.toList).rotate180().map(_.mkString)
+    def rotate270(): List[String] = list.map(_.toList).rotate270().map(_.mkString)
+  }
 }

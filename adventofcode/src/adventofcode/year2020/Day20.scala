@@ -3,75 +3,60 @@ package adventofcode.year2020
 import adventofcode.utils._
 import adventofcode.{Day, Grid, GridLocation}
 
-case class Day20TileEdges(id: Long, a: String, b: String, c: String, d: String, completeTile: List[String])
+case class Day20TileEdge(top: String, right: String, bottom: String, left: String)
 
-case class Day20Tile(id: Long, edgeOptions: List[Day20TileEdges]) {
-  lazy val allEdges: List[Day20TileEdges] = {
-    val fa = edgeOptions.head.a
-    val fb = edgeOptions.head.b
-    val fc = edgeOptions.head.c
-    val fd = edgeOptions.head.d
-
-    val ra = edgeOptions(1).a
-    val rb = edgeOptions(1).b
-    val rc = edgeOptions(1).c
-    val rd = edgeOptions(1).d
-
-    val forwardTile = edgeOptions.head.completeTile.map(_.toList)
-    val reverseTile = edgeOptions(1).completeTile.map(_.toList)
-
-    List(
-      Day20TileEdges(id, fa, fb, fc, fd, forwardTile.map(_.mkString)),
-      Day20TileEdges(id, fd, fa, fb, fc, forwardTile.rotate90().map(_.mkString)),
-      Day20TileEdges(id, fc, fd, fa, fb, forwardTile.rotate180().map(_.mkString)),
-      Day20TileEdges(id, fb, fc, fd, fa, forwardTile.rotate270().map(_.mkString)),
-      Day20TileEdges(id, ra, rb, rc, rd, reverseTile.map(_.mkString)),
-      Day20TileEdges(id, rd, ra, rb, rc, reverseTile.rotate90().map(_.mkString)),
-      Day20TileEdges(id, rc, rd, ra, rb, reverseTile.rotate180().map(_.mkString)),
-      Day20TileEdges(id, rb, rc, rd, ra, reverseTile.rotate270().map(_.mkString))
+object Day20TileEdge {
+  def from(data: List[String]): Day20TileEdge = {
+    Day20TileEdge(
+      data.head,
+      data.map(_.last).mkString,
+      data.last.reverse,
+      data.map(_.head).mkString.reverse
     )
   }
-  val distinctEdges: List[String] = edgeOptions.flatMap(e => List(e.a, e.b, e.c, e.d)).distinct.sorted
 }
+case class Day20Tile(id: Long, data: List[String]) {
+  private val flippedData: List[String] = data.map(_.reverse)
 
-object Day20Data {
-  private val idPattern = "Tile (\\d+):".r
+  val edge: Day20TileEdge = Day20TileEdge.from(data)
+  val flippedEdge: Day20TileEdge = Day20TileEdge.from(flippedData)
 
-  def parseAll(lines: List[String]): List[Day20Tile] = {
-    // find all edges (with reverses) and normalize tiles to use simple numbers
-    val tileLines = lines.map { l =>
-      val split = l.split("\n")
-      val idPattern(id) = split.head
-      val patternLines = split.tail.toList
-      val a = patternLines.head
-      val b = patternLines.map(l => l.last).mkString
-      val c = patternLines.last.reverse
-      val d = patternLines.map(l => l.head).mkString.reverse
-      TileLines(id.toLong, a, b, c, d, patternLines)
-    }
+  def debug(): Unit = data.foreach(println)
 
-    tileLines.map { line =>
-      val edges1 = Day20TileEdges(
-        line.id,
-        line.a,
-        line.b,
-        line.c,
-        line.d,
-        line.complete
-      )
-      val edges2 = Day20TileEdges(
-        line.id,
-        line.a.reverse,
-        line.d.reverse,
-        line.c.reverse,
-        line.b.reverse,
-        line.complete.map(_.reverse)
-      )
-      Day20Tile(line.id, List(edges1, edges2))
-    }
+  lazy val allOrientations: List[Day20Tile] = {
+    List(
+      this,
+      Day20Tile(id, data.rotate90()),
+      Day20Tile(id, data.rotate180()),
+      Day20Tile(id, data.rotate270()),
+      Day20Tile(id, flippedData),
+      Day20Tile(id, flippedData.rotate90()),
+      Day20Tile(id, flippedData.rotate180()),
+      Day20Tile(id, flippedData.rotate270())
+    )
   }
 
-  case class TileLines(id: Long, a: String, b: String, c: String, d: String, complete: List[String])
+  val distinctEdges: List[String] = List(
+    edge.top,
+    edge.right,
+    edge.bottom,
+    edge.left,
+    flippedEdge.top,
+    flippedEdge.right,
+    flippedEdge.bottom,
+    flippedEdge.left
+  )
+}
+
+object Day20Tile {
+  private val idPattern = "Tile (\\d+):".r
+
+  def parseAll(lines: List[String]): List[Day20Tile] =
+    lines.map { line =>
+      val split = line.split("\n")
+      val idPattern(id) = split.head
+      Day20Tile(id.toLong, split.tail.toList)
+    }
 }
 
 case class Day20Context(process: List[Day20Tile] => Long)
@@ -79,16 +64,16 @@ case class Day20Context(process: List[Day20Tile] => Long)
 object Day20 extends Day[List[Day20Tile], Day20Context, Long](2020, 20) {
   // format: off
   private val seaMonster =
-    ("                  # \n" +
-      "#    ##    ##    ###\n" +
-      " #  #  #  #  #  #   \n")
-      .replace(" ", ".")
-      .split("\n")
-      .map(line => s"$line".r)
+   ("                  # \n" +
+    "#    ##    ##    ###\n" +
+    " #  #  #  #  #  #   \n")
+    .replace(" ", ".")
+    .split("\n")
+    .map(line => s"$line".r)
   // format: on
 
   override def transformInput(lines: List[String]): List[Day20Tile] =
-    Day20Data.parseAll(lines)
+    Day20Tile.parseAll(lines)
 
   override def splitOn(): String = "\n\n"
 
@@ -104,114 +89,86 @@ object Day20 extends Day[List[Day20Tile], Day20Context, Long](2020, 20) {
   private def processPartOne(tiles: List[Day20Tile]): Long =
     // corners are only connected to two other tiles
     adjacency(tiles).collect {
-      case (tile, connected) if connected.size == 2 => tile.id
+      case (id, connected) if connected.size == 2 => id
     }.product
 
   private def processPartTwo(tiles: List[Day20Tile]): Long = {
     val solved = solve(tiles)
-    val oriented = for {
-      r <- 0 until solved.rows
-      c <- 0 until solved.columns
-    } yield {
-      val tile = solved(r, c)
-      val topCondition: String => Boolean = s => r == 0 || solved(r - 1, c).distinctEdges.contains(s)
-      val leftCondition: String => Boolean = s => c == 0 || solved(r, c - 1).distinctEdges.contains(s)
-      val rightCondition: String => Boolean = s => c == solved.columns - 1 || solved(r, c + 1).distinctEdges.contains(s)
-      val bottomCondition: String => Boolean = s => r == solved.rows - 1 || solved(r + 1, c).distinctEdges.contains(s)
-      val result = tile.allEdges.find { e =>
-        topCondition(e.a) && leftCondition(e.d) && rightCondition(e.b) && bottomCondition(e.c)
-      }
-      GridLocation(r, c) -> result
+    val image = imageFromGrid(solved)
+    val allImages = {
+      val lines = image.split("\n").toList
+      val flipped = lines.map(_.reverse)
+      List(
+        lines,
+        lines.rotate90(),
+        lines.rotate180(),
+        lines.rotate270(),
+        flipped,
+        flipped.rotate90(),
+        flipped.rotate180(),
+        flipped.rotate270()
+      )
     }
-    val finalGrid = Grid(solved.rows, solved.columns, oriented.map(kv => kv._1 -> kv._2.get).toMap)
-    val arranged = {
-      val sb = new StringBuilder
-      for (r <- 0 until finalGrid.rows) {
-        for (ri <- 1 until 9) {
-          for (c <- 0 until finalGrid.columns) {
-            sb.append(finalGrid(r, c).completeTile(ri).slice(1, 9))
-            //sb.append(" ")
-          }
-          sb.append("\n")
-        }
-        //sb.append("\n")
-      }
-      sb.toString
-    }
-    // println(arranged)
-
-    def countMonsters(lines: List[String]): Int = {
-      (0 to lines.length - 3).map { line =>
-        val indexes1 = (0 to lines(line).length - 20)
-          .map(i => i -> seaMonster(0).matches(lines(line + 1).slice(i, i + 20)))
-          .filter(_._2)
-          .map(_._1)
-        val indexes2 = (0 to lines(line + 1).length - 20)
-          .map(i => i -> seaMonster(1).matches(lines(line + 1).slice(i, i + 20)))
-          .filter(_._2)
-          .map(_._1)
-        val indexes3 = (0 to lines(line + 2).length - 20)
-          .map(i => i -> seaMonster(2).matches(lines(line + 2).slice(i, i + 20)))
-          .filter(_._2)
-          .map(_._1)
-        (indexes1 intersect indexes2 intersect indexes3).size
-      }.sum
-    }
-
-    val lines = arranged.split("\n").map(_.toList).toList
-    val reversed = lines.map(_.reverse)
-    val allArrangements = List(
-      lines.map(_.mkString),
-      lines.rotate90().map(_.mkString),
-      lines.rotate180().map(_.mkString),
-      lines.rotate270().map(_.mkString),
-      reversed.map(_.mkString),
-      reversed.rotate90().map(_.mkString),
-      reversed.rotate180().map(_.mkString),
-      reversed.rotate270().map(_.mkString)
-    )
-
-    val seaMonsterCount = allArrangements.map(countMonsters).max
+    val seaMonsterCount = allImages.map(countMonstersInImage).max
     val seaMonsterSize = seaMonster.map(_.pattern.toString.toList.count(c => c == '#')).sum
-    val waves = arranged.count(_ == '#')
+    val waves = image.count(_ == '#')
     waves - seaMonsterSize * seaMonsterCount.toLong
   }
 
   private def solve(all: List[Day20Tile]): Grid[Day20Tile] = {
-    var adj = adjacency(all)
+    val tileById = all.map(t => t.id -> t).toMap
+    val adj = adjacency(all)
 
-    def removeConnection(one: Day20Tile, two: Day20Tile): Unit = {
-      adj = adj.updated(one, adj(one) - two)
-      adj = adj.updated(two, adj(two) - one)
-    }
+    def topCheck(source: Day20Tile, target: Day20Tile): Boolean = target.edge.bottom == source.edge.top.reverse
+    def rightCheck(source: Day20Tile, target: Day20Tile): Boolean = target.edge.left == source.edge.right
+    def bottomCheck(source: Day20Tile, target: Day20Tile): Boolean = target.edge.top == source.edge.bottom
+    def leftCheck(source: Day20Tile, target: Day20Tile): Boolean = target.edge.right == source.edge.left.reverse
 
     // pick a corner to start
-    val corner = adj.collect { case (tile, connected) if connected.size == 2 => tile }.head
+    val (corner, connectedToCorner) = adj.find { case (_, connected) => connected.size == 2 }.head
+    val orientedCorner = tileById(corner).allOrientations.find { tile =>
+      val rightMatch = tileById(connectedToCorner.head).allOrientations.exists(o => rightCheck(tile, o))
+      val bottomMatch = tileById(connectedToCorner.last).allOrientations.exists(o => bottomCheck(tile, o))
+      rightMatch && bottomMatch
+    }.head
+
     val gridSize = math.sqrt(all.length.toDouble).toInt
     var start =
-      Grid.fill[Option[Day20Tile]](gridSize, gridSize)(None).updated(GridLocation(0, 0), Some(corner))
+      Grid.fill[Option[Day20Tile]](gridSize, gridSize)(None).updated(GridLocation(0, 0), Some(orientedCorner))
 
     for (row <- 0 until start.rows) {
       for (col <- 0 until start.columns) {
-        val maybeLeft = if (col > 0) start(row, col - 1) else None
-        val maybeTop = if (row > 0) start(row - 1, col) else None
-        val hasRight = if (col < start.columns - 1) 1 else 0
-        val hasBottom = if (row < start.rows - 1) 1 else 0
-        val expectedNeighbors = List(maybeLeft, maybeTop).flatten
-        val expectedNeighborCount = expectedNeighbors.length + hasRight + hasBottom
+        if (row != 0 || col != 0) {
+          val maybeLeft = if (col > 0) start(row, col - 1) else None
+          val maybeTop = if (row > 0) start(row - 1, col) else None
+          val hasRight = if (col < start.columns - 1) 1 else 0
+          val hasBottom = if (row < start.rows - 1) 1 else 0
+          val expectedNeighbors = List(maybeLeft, maybeTop).flatten
+          val expectedNeighborCount = expectedNeighbors.length + hasRight + hasBottom
 
-        val maybeTile = adj
-          .find { case (_, neighbors) =>
-            val correctSize = neighbors.size == expectedNeighborCount
-            val correctValues = expectedNeighbors.forall(en => neighbors.contains(en))
-            correctSize && correctValues
-          }
-          .map { case (tile, _) => tile }
+          val tileIds = adj
+            .filter { case (_, neighbors) =>
+              val correctSize = neighbors.size == expectedNeighborCount
+              val correctValues = expectedNeighbors.forall(en => neighbors.contains(en.id))
+              correctSize && correctValues
+            }
+            .map { case (id, _) => id }
 
-        maybeTile.foreach { tile =>
-          start = start.updated(GridLocation(row, col), Some(tile))
-          maybeLeft.foreach(left => removeConnection(tile, left))
-          maybeTop.foreach(top => removeConnection(tile, top))
+          val orientedTile = tileIds.flatMap { id =>
+            tileById(id).allOrientations.filter { tile =>
+              val top = start
+                .get(row - 1, col)
+                .flatMap(maybeTile => maybeTile.map(target => topCheck(tile, target)))
+                .getOrElse(true)
+              val left = start
+                .get(row, col - 1)
+                .flatMap(maybeTile => maybeTile.map(target => leftCheck(tile, target)))
+                .getOrElse(true)
+              top && left
+            }
+          }.head
+
+          start = start.updated(GridLocation(row, col), Some(orientedTile))
         }
       }
     }
@@ -219,10 +176,40 @@ object Day20 extends Day[List[Day20Tile], Day20Context, Long](2020, 20) {
     Grid(start.rows, start.columns, start.data.map { case (location, maybeTile) => location -> maybeTile.get })
   }
 
-  private def adjacency(tiles: List[Day20Tile]): Map[Day20Tile, Set[Day20Tile]] = {
-    def connectedTo(tile: Day20Tile, tiles: List[Day20Tile]): List[Day20Tile] =
-      tiles.filter(t => tile.distinctEdges.count(e => t.distinctEdges.contains(e)) == 2)
+  private def adjacency(tiles: List[Day20Tile]): Map[Long, Set[Long]] = {
+    def connectedTo(tile: Day20Tile): List[Long] =
+      tiles.filter(t => tile.distinctEdges.count(e => t.distinctEdges.contains(e)) == 2).map(_.id)
 
-    tiles.map(tile => tile -> connectedTo(tile, tiles).toSet).toMap
+    tiles.map(tile => tile.id -> connectedTo(tile).toSet).toMap
   }
+
+  private def imageFromGrid(grid: Grid[Day20Tile]): String = {
+    val sb = new StringBuilder
+    for (r <- 0 until grid.rows) {
+      for (ri <- 1 until 9) {
+        for (c <- 0 until grid.columns) {
+          sb.append(grid(r, c).data(ri).slice(1, 9))
+        }
+        sb.append("\n")
+      }
+    }
+    sb.toString
+  }
+
+  private def countMonstersInImage(image: List[String]): Int =
+    (0 to image.length - 3).map { line =>
+      val indexes1 = (0 to image(line).length - 20)
+        .map(i => i -> seaMonster(0).matches(image(line + 1).slice(i, i + 20)))
+        .filter(_._2)
+        .map(_._1)
+      val indexes2 = (0 to image(line + 1).length - 20)
+        .map(i => i -> seaMonster(1).matches(image(line + 1).slice(i, i + 20)))
+        .filter(_._2)
+        .map(_._1)
+      val indexes3 = (0 to image(line + 2).length - 20)
+        .map(i => i -> seaMonster(2).matches(image(line + 2).slice(i, i + 20)))
+        .filter(_._2)
+        .map(_._1)
+      (indexes1 intersect indexes2 intersect indexes3).size
+    }.sum
 }
