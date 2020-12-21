@@ -198,18 +198,19 @@ object Day20 extends Day[List[Day20Tile], Day20Context, Long](2020, 20) {
 
   private def countMonstersInImage(image: List[String]): Int =
     (0 to image.length - 3).map { line =>
+      // manually sliding so we can intersect indexes from all matches
       val indexes1 = (0 to image(line).length - 20)
-        .map(i => i -> seaMonster(0).matches(image(line + 1).slice(i, i + 20)))
-        .filter(_._2)
-        .map(_._1)
+        .map(i => i -> seaMonster(0).matches(image(line).slice(i, i + 20)))
+        .collect { case (index, matches) if matches => index }
+
       val indexes2 = (0 to image(line + 1).length - 20)
         .map(i => i -> seaMonster(1).matches(image(line + 1).slice(i, i + 20)))
-        .filter(_._2)
-        .map(_._1)
+        .collect { case (index, matches) if matches => index }
+
       val indexes3 = (0 to image(line + 2).length - 20)
         .map(i => i -> seaMonster(2).matches(image(line + 2).slice(i, i + 20)))
-        .filter(_._2)
-        .map(_._1)
+        .collect { case (index, matches) if matches => index }
+
       (indexes1 intersect indexes2 intersect indexes3).size
     }.sum
 }
