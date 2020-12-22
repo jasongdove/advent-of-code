@@ -37,27 +37,22 @@ object Day22 extends Day[Day22Players, Day22Context, Long](2020, 22) {
       winner.deck.reverse.zipWithIndex.map { case (card, index) => card * (index + 1L) }.sum
     }
 
-  private def winnerPartOne(one: Day22PlayerOne, two: Day22PlayerTwo): Day22Player = {
+  private def winnerPartOne(one: Day22PlayerOne, two: Day22PlayerTwo): Day22Player =
     if (one.deck.head > two.deck.head) one else two
-  }
 
-  private def winnerPartTwo(one: Day22PlayerOne, two: Day22PlayerTwo): Day22Player = {
-    val cardOne = one.deck.head
-    val cardTwo = two.deck.head
-    if (one.deck.tail.length >= cardOne && two.deck.tail.length >= cardTwo) {
+  private def winnerPartTwo(one: Day22PlayerOne, two: Day22PlayerTwo): Day22Player =
+    if (one.deck.tail.length >= one.deck.head && two.deck.tail.length >= two.deck.head) {
       val subGameWinner = play(
         winnerPartTwo,
         Set.empty,
-        Day22PlayerOne(one.deck.tail.take(cardOne)),
-        Day22PlayerTwo(two.deck.tail.take(cardTwo))
+        Day22PlayerOne(one.deck.tail.take(one.deck.head)),
+        Day22PlayerTwo(two.deck.tail.take(two.deck.head))
       )
       subGameWinner match {
         case Day22PlayerOne(_) => one
         case Day22PlayerTwo(_) => two
       }
-    } else if (cardOne > cardTwo) one
-    else two
-  }
+    } else winnerPartOne(one, two)
 
   @annotation.tailrec
   private def play(
@@ -70,14 +65,12 @@ object Day22 extends Day[Day22Players, Day22Context, Long](2020, 22) {
     else if (one.deck.isEmpty) two
     else if (two.deck.isEmpty) one
     else {
-      val cardOne = one.deck.head
-      val cardTwo = two.deck.head
       determineWinner(one, two) match {
         case Day22PlayerOne(_) =>
           play(
             determineWinner,
             played + ((one, two)),
-            Day22PlayerOne(one.deck.tail ++ Seq(cardOne, cardTwo)),
+            Day22PlayerOne(one.deck.tail ++ Seq(one.deck.head, two.deck.head)),
             Day22PlayerTwo(two.deck.tail)
           )
         case Day22PlayerTwo(_) =>
@@ -85,7 +78,7 @@ object Day22 extends Day[Day22Players, Day22Context, Long](2020, 22) {
             determineWinner,
             played + ((one, two)),
             Day22PlayerOne(one.deck.tail),
-            Day22PlayerTwo(two.deck.tail ++ Seq(cardTwo, cardOne))
+            Day22PlayerTwo(two.deck.tail ++ Seq(two.deck.head, one.deck.head))
           )
       }
     }
