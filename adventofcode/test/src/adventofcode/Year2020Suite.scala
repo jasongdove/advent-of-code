@@ -147,4 +147,9 @@ object Year2020Suite extends BaseSuite {
   aocTest(Day22, One, Real, 32629L)
   aocTest(Day22, Two, Example, 291L)
   aocTest(Day22, Two, Real, 32519L)
+
+  aocTest(Day23.Runner, One, Example, "67384529")
+  aocTest(Day23.Runner, One, Real, "47598263")
+  aocTest(Day23.Runner, Two, Example, "149245887792")
+  aocTest(Day23.Runner, Two, Real, "248009574232")
 }
