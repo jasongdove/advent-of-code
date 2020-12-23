@@ -1,25 +1,10 @@
 package adventofcode.year2015
 
 import adventofcode.{Day, Edge, WeightedGraph}
+import cats.effect._
 
-case class Day13Context(transformEdges: List[Edge[String]] => List[Edge[String]])
-
-object Day13 extends Day[List[Edge[String]], Day13Context, Long](2015, 13) {
-  override def transformInput(lines: List[String]): List[Edge[String]] =
-    edgesFrom(lines)
-
-  override def partOneContext(): Option[Day13Context] =
-    Some(Day13Context(identity))
-
-  override def partTwoContext(): Option[Day13Context] =
-    Some(Day13Context(addNeutralGuest))
-
-  override def process(input: List[Edge[String]], context: Option[Day13Context]): Option[Long] =
-    context.map { ctx =>
-      val graph = WeightedGraph.undirectedFrom(ctx.transformEdges(input))
-      val weights = graph.adj.flatMap(a => graph.tspWeights(a._1)).flatten.toList
-      weights.max.toLong
-    }
+object Day13 extends IOApp {
+  case class Context(transformEdges: List[Edge[String]] => List[Edge[String]])
 
   private def edgesFrom(lines: List[String]): List[Edge[String]] = {
     case class Pair(left: String, right: String, weight: Int)
@@ -49,4 +34,24 @@ object Day13 extends Day[List[Edge[String]], Day13Context, Long](2015, 13) {
     val newEdges = allGuests.map(Edge("me", _, 0))
     edges ++ newEdges
   }
+
+  object Runner extends Day[List[Edge[String]], Context, Long](2015, 13) {
+    override def transformInput(lines: List[String]): List[Edge[String]] =
+      edgesFrom(lines)
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(identity))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(addNeutralGuest))
+
+    override def process(input: List[Edge[String]], context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        val graph = WeightedGraph.undirectedFrom(ctx.transformEdges(input))
+        val weights = graph.adj.flatMap(a => graph.tspWeights(a._1)).flatten.toList
+        weights.max.toLong
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

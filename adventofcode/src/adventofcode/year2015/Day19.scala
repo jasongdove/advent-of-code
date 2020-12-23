@@ -1,41 +1,27 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Replacement(from: String, to: String)
-case class Machine(replacements: List[Replacement], start: String)
+object Day19 extends IOApp {
+  case class Replacement(from: String, to: String)
+  case class Machine(replacements: List[Replacement], start: String)
 
-object Machine {
-  private val replacementPattern = "(.*) => (.*)".r
+  object Machine {
+    private val replacementPattern = "(.*) => (.*)".r
 
-  def from(lines: List[String]): Machine = {
-    val replacementLines = lines.head.split("\n").toList
-    val start = lines(1).trim
-    val replacements = replacementLines.map { line =>
-      val replacementPattern(from, to) = line
-      Replacement(from, to)
+    def from(lines: List[String]): Machine = {
+      val replacementLines = lines.head.split("\n").toList
+      val start = lines(1).trim
+      val replacements = replacementLines.map { line =>
+        val replacementPattern(from, to) = line
+        Replacement(from, to)
+      }
+      Machine(replacements, start)
     }
-    Machine(replacements, start)
   }
-}
 
-case class Day19Context(process: Machine => Option[Int])
-
-object Day19 extends Day[Machine, Day19Context, Int](2015, 19) {
-
-  override def splitOn(): String = "\n\n"
-
-  override def transformInput(lines: List[String]): Machine =
-    Machine.from(lines)
-
-  override def partOneContext(): Option[Day19Context] =
-    Some(Day19Context(processPartOne))
-
-  override def partTwoContext(): Option[Day19Context] =
-    Some(Day19Context(processPartTwo))
-
-  override def process(input: Machine, context: Option[Day19Context]): Option[Int] =
-    context.flatMap(_.process(input))
+  case class Context(process: Machine => Option[Int])
 
   private def processPartOne(machine: Machine): Option[Int] =
     Some(step(Set.empty, 0, machine).size)
@@ -82,4 +68,23 @@ object Day19 extends Day[Machine, Day19Context, Int](2015, 19) {
       step(acc ++ applicable, index + 1, machine)
     }
   }
+
+  object Runner extends Day[Machine, Context, Int](2015, 19) {
+
+    override def splitOn(): String = "\n\n"
+
+    override def transformInput(lines: List[String]): Machine =
+      Machine.from(lines)
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(processPartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(processPartTwo))
+
+    override def process(input: Machine, context: Option[Context]): Option[Int] =
+      context.flatMap(_.process(input))
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

@@ -8,11 +8,15 @@ object ResourceType {
   case object Real extends ResourceType
 }
 
-sealed abstract class PartNumber
+sealed trait PartNumber
 object PartNumber {
   case object Unspecified extends PartNumber
-  case object One extends PartNumber
-  case object Two extends PartNumber
+  case object One extends PartNumber {
+    override def toString = "1"
+  }
+  case object Two extends PartNumber {
+    override def toString = "2"
+  }
 }
 
 abstract class Day[A, B, C](val yearNumber: Int, val dayNumber: Int) extends IOApp {

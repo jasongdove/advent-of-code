@@ -1,22 +1,10 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day5Context(classifier: String => Boolean)
-
-object Day5 extends Day[List[String], Day5Context, Long](2015, 5) {
-  override def transformInput(lines: List[String]): List[String] = lines
-
-  override def partOneContext(): Option[Day5Context] =
-    Some(Day5Context(isNicePartOne))
-
-  override def partTwoContext(): Option[Day5Context] =
-    Some(Day5Context(isNicePartTwo))
-
-  override def process(input: List[String], context: Option[Day5Context]): Option[Long] =
-    context.map { ctx =>
-      input.count(ctx.classifier).toLong
-    }
+object Day5 extends IOApp {
+  case class Context(classifier: String => Boolean)
 
   private def isNicePartOne(str: String): Boolean = {
     val vowels = Set('a', 'e', 'i', 'o', 'u')
@@ -63,4 +51,21 @@ object Day5 extends Day[List[String], Day5Context, Long](2015, 5) {
 
     notOverlappingPair(str) && repeatsWithSpace(str)
   }
+
+  object Runner extends Day[List[String], Context, Long](2015, 5) {
+    override def transformInput(lines: List[String]): List[String] = lines
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(isNicePartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(isNicePartTwo))
+
+    override def process(input: List[String], context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        input.count(ctx.classifier).toLong
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

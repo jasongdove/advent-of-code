@@ -1,26 +1,10 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day24Context(groups: Int)
-
-object Day24 extends Day[Set[Long], Day24Context, Long](2015, 24) {
-
-  override def transformInput(lines: List[String]): Set[Long] =
-    lines.map(_.toLong).toSet
-
-  override def partOneContext(): Option[Day24Context] =
-    Some(Day24Context(3))
-
-  override def partTwoContext(): Option[Day24Context] =
-    Some(Day24Context(4))
-
-  override def process(input: Set[Long], context: Option[Day24Context]): Option[Long] =
-    context.map { ctx =>
-      val targetWeight = input.sum / ctx.groups
-      val fewest = fewestEqualWeight(input, targetWeight)
-      input.subsets(fewest).filter(_.sum == targetWeight).map(_.product).min
-    }
+object Day24 extends IOApp {
+  case class Context(groups: Int)
 
   private def fewestEqualWeight(input: Set[Long], weight: Long): Int = {
     (1 to input.size).foldLeft(0) { (acc, i) =>
@@ -29,4 +13,25 @@ object Day24 extends Day[Set[Long], Day24Context, Long](2015, 24) {
       else 0
     }
   }
+
+  object Runner extends Day[Set[Long], Context, Long](2015, 24) {
+
+    override def transformInput(lines: List[String]): Set[Long] =
+      lines.map(_.toLong).toSet
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(3))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(4))
+
+    override def process(input: Set[Long], context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        val targetWeight = input.sum / ctx.groups
+        val fewest = fewestEqualWeight(input, targetWeight)
+        input.subsets(fewest).filter(_.sum == targetWeight).map(_.product).min
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

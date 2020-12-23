@@ -1,26 +1,10 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day20Context(presentsForHouse: Int => Int)
-
-object Day20 extends Day[Int, Day20Context, Int](2015, 20) {
-
-  override def transformInput(lines: List[String]): Int =
-    lines.mkString.trim.toInt
-
-  override def partOneContext(): Option[Day20Context] =
-    Some(Day20Context(presentsForHousePartOne))
-
-  override def partTwoContext(): Option[Day20Context] =
-    Some(Day20Context(presentsForHousePartTwo))
-
-  override def process(input: Int, context: Option[Day20Context]): Option[Int] =
-    context.flatMap { ctx =>
-      LazyList
-        .from(1)
-        .find(house => ctx.presentsForHouse(house) >= input)
-    }
+object Day20 extends IOApp {
+  case class Context(presentsForHouse: Int => Int)
 
   private def elvesForHouse(number: Int, firstElf: Int): Set[Int] = {
     Range
@@ -38,4 +22,25 @@ object Day20 extends Day[Int, Day20Context, Int](2015, 20) {
     val firstElf = ((number - 1) / 50) + 1
     elvesForHouse(number, firstElf).map(_ * 11).sum
   }
+
+  object Runner extends Day[Int, Context, Int](2015, 20) {
+
+    override def transformInput(lines: List[String]): Int =
+      lines.mkString.trim.toInt
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(presentsForHousePartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(presentsForHousePartTwo))
+
+    override def process(input: Int, context: Option[Context]): Option[Int] =
+      context.flatMap { ctx =>
+        LazyList
+          .from(1)
+          .find(house => ctx.presentsForHouse(house) >= input)
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

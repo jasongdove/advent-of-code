@@ -1,39 +1,27 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-sealed abstract class Direction extends Product with Serializable
+object Day3 extends IOApp {
+  sealed trait Direction
 
-case object North extends Direction
-case object East extends Direction
-case object West extends Direction
-case object South extends Direction
+  case object North extends Direction
+  case object East extends Direction
+  case object West extends Direction
+  case object South extends Direction
 
-object Direction {
-  def from(char: Char): Direction =
-    char match {
-      case '<' => West
-      case '>' => East
-      case '^' => North
-      case 'v' => South
-    }
-}
+  object Direction {
+    def from(char: Char): Direction =
+      char match {
+        case '<' => West
+        case '>' => East
+        case '^' => North
+        case 'v' => South
+      }
+  }
 
-case class Day3Context(process: List[Direction] => Option[Long])
-
-object Day3 extends Day[List[Direction], Day3Context, Long](2015, 3) {
-
-  override def transformInput(lines: List[String]): List[Direction] =
-    lines.mkString.trim.map(Direction.from).toList
-
-  override def partOneContext(): Option[Day3Context] =
-    Some(Day3Context(processPartOne))
-
-  override def partTwoContext(): Option[Day3Context] =
-    Some(Day3Context(processPartTwo))
-
-  override def process(input: List[Direction], context: Option[Day3Context]): Option[Long] =
-    context.flatMap(_.process(input))
+  case class Context(process: List[Direction] => Option[Long])
 
   private def processPartOne(input: List[Direction]): Option[Long] =
     Some(housesWithPresents(input).size.toLong)
@@ -71,4 +59,20 @@ object Day3 extends Day[List[Direction], Day3Context, Long](2015, 3) {
 
     loop(Set((0, 0)), 0, 0, input)
   }
+
+  object Runner extends Day[List[Direction], Context, Long](2015, 3) {
+    override def transformInput(lines: List[String]): List[Direction] =
+      lines.mkString.trim.map(Direction.from).toList
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(processPartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(processPartTwo))
+
+    override def process(input: List[Direction], context: Option[Context]): Option[Long] =
+      context.flatMap(_.process(input))
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

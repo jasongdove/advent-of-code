@@ -1,18 +1,17 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Wizard(hitPoints: Int, mana: Int, armor: Int) {
-  def spendMana(m: Int): Wizard = Wizard(hitPoints, mana - m, armor)
-  def takeDamage(damage: Int): Wizard = Wizard(hitPoints - Math.max(damage - armor, 1), mana, armor)
-}
+object Day22 extends IOApp {
+  case class Wizard(hitPoints: Int, mana: Int, armor: Int) {
+    def spendMana(m: Int): Wizard = Wizard(hitPoints, mana - m, armor)
+    def takeDamage(damage: Int): Wizard = Wizard(hitPoints - Math.max(damage - armor, 1), mana, armor)
+  }
 
-case class Day22Context(difficulty: Wizard => Wizard)
-
-object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
-
-  implicit class Day22Boss(boss: Boss) {
-    def takeDamage(damage: Int): Boss = Boss(boss.hitPoints - Math.max(damage - boss.defense, 1), boss.damage, boss.defense)
+  case class Boss(hitPoints: Int, damage: Int, defense: Int) {
+    def takeDamage(damage: Int): Boss =
+      Boss(hitPoints - Math.max(damage - defense, 1), damage, defense)
   }
 
   sealed trait GameResult
@@ -92,36 +91,7 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
 
   case class SpellTimer(spell: Effect, timer: Int)
 
-  override def transformInput(lines: List[String]): Boss = {
-    val hpPattern = "Hit Points: (\\d+)".r
-    val dmgPattern = "Damage: (\\d+)".r
-
-    val hpPattern(hitPoints) = lines.head
-    val dmgPattern(damage) = lines(1)
-
-    Boss(hitPoints.toInt, damage.toInt, 0)
-  }
-
-  override def partOneContext(): Option[Day22Context] =
-    Some(Day22Context(identity))
-
-  override def partTwoContext(): Option[Day22Context] =
-    Some(Day22Context(_.takeDamage(1)))
-
-  override def process(input: Boss, context: Option[Day22Context]): Option[Int] = {
-    import GameResult._
-
-    context.map { ctx =>
-      val wizard = Wizard(50, 500, 0)
-      val newGameState = GameState(isWizardTurn = true, wizard, input, List.empty, Vector.empty, GameResult.InProgress)
-
-      generateSpellQueues().flatMap { sq =>
-        val gameState = evaluate(newGameState, sq, ctx.difficulty)
-        if (gameState.result == BossDied) Some(gameState.spellsCast.map(_.mana).sum)
-        else None
-      }.min
-    }
-  }
+  case class Context(difficulty: Wizard => Wizard)
 
   private def generateSpellQueues(): Iterator[List[Spell]] = {
     import Spell._
@@ -151,9 +121,9 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
 
     @annotation.tailrec
     def playRound(
-      state: GameState,
-      spellQueue: List[Spell]
-    ): GameState = {
+                   state: GameState,
+                   spellQueue: List[Spell]
+                 ): GameState = {
       val difficultyState = if (state.isWizardTurn) state.updated(difficulty(state.wizard), state.boss) else state
       if (difficultyState.wizard.hitPoints <= 0) difficultyState.completed(GameResult.WizardDied)
       else {
@@ -215,4 +185,40 @@ object Day22 extends Day[Boss, Day22Context, Int](2015, 22) {
 
     playRound(initialState, spellQueue)
   }
+
+  object Runner extends Day[Boss, Context, Int](2015, 22) {
+    override def transformInput(lines: List[String]): Boss = {
+      val hpPattern = "Hit Points: (\\d+)".r
+      val dmgPattern = "Damage: (\\d+)".r
+
+      val hpPattern(hitPoints) = lines.head
+      val dmgPattern(damage) = lines(1)
+
+      Boss(hitPoints.toInt, damage.toInt, 0)
+    }
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(identity))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(_.takeDamage(1)))
+
+    override def process(input: Boss, context: Option[Context]): Option[Int] = {
+      import GameResult._
+
+      context.map { ctx =>
+        val wizard = Wizard(50, 500, 0)
+        val newGameState =
+          GameState(isWizardTurn = true, wizard, input, List.empty, Vector.empty, GameResult.InProgress)
+
+        generateSpellQueues().flatMap { sq =>
+          val gameState = evaluate(newGameState, sq, ctx.difficulty)
+          if (gameState.result == BossDied) Some(gameState.spellsCast.map(_.mana).sum)
+          else None
+        }.min
+      }
+    }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

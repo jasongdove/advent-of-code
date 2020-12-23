@@ -1,2 +1,2 @@
 #! /usr/bin/env sh
-mill adventofcode.test -o "adventofcode.year$1.Day$2Suite*"
+mill adventofcode.test -o "adventofcode.Year$1Suite.day $2*"

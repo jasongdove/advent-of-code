@@ -1,25 +1,10 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day10Context(rounds: Int)
-
-object Day10 extends Day[String, Day10Context, Long](2015, 10) {
-
-  override def transformInput(lines: List[String]): String =
-    lines.mkString
-
-  override def partOneContext(): Option[Day10Context] =
-    Some(Day10Context(40))
-
-  override def partTwoContext(): Option[Day10Context] =
-    Some(Day10Context(50))
-
-  override def process(input: String, context: Option[Day10Context]): Option[Long] =
-    context.map { ctx =>
-      val result = Range(0, ctx.rounds).foldLeft(input)((s, _) => lookAndSay(s))
-      result.length.toLong
-    }
+object Day10 extends IOApp {
+  case class Context(rounds: Int)
 
   private def lookAndSay(input: String): String = {
     val sb = new StringBuilder
@@ -40,4 +25,24 @@ object Day10 extends Day[String, Day10Context, Long](2015, 10) {
     }
     loop(input.charAt(0), input.toList, 0)
   }
+
+  object Runner extends Day[String, Context, Long](2015, 10) {
+
+    override def transformInput(lines: List[String]): String =
+      lines.mkString
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(40))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(50))
+
+    override def process(input: String, context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        val result = Range(0, ctx.rounds).foldLeft(input)((s, _) => lookAndSay(s))
+        result.length.toLong
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

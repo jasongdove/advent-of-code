@@ -1,24 +1,12 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
 import scala.annotation.tailrec
 
-case class Day8Context(process: String => String)
-
-object Day8 extends Day[List[String], Day8Context, Long](2015, 8) {
-  override def transformInput(lines: List[String]): List[String] = lines
-
-  override def partOneContext(): Option[Day8Context] =
-    Some(Day8Context(unescape))
-
-  override def partTwoContext(): Option[Day8Context] =
-    Some(Day8Context(escape))
-
-  override def process(input: List[String], context: Option[Day8Context]): Option[Long] =
-    context.map { ctx =>
-      input.map(line => (line.length - ctx.process(line).length).abs).sum.toLong
-    }
+object Day8 extends IOApp {
+  case class Context(process: String => String)
 
   private def unescape(s: String): String = {
     val hex =
@@ -59,4 +47,21 @@ object Day8 extends Day[List[String], Day8Context, Long](2015, 8) {
     }
     (loop(Seq('\"'), s) ++ Seq('\"')).mkString
   }
+
+  object Runner extends Day[List[String], Context, Long](2015, 8) {
+    override def transformInput(lines: List[String]): List[String] = lines
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(unescape))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(escape))
+
+    override def process(input: List[String], context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        input.map(line => (line.length - ctx.process(line).length).abs).sum.toLong
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

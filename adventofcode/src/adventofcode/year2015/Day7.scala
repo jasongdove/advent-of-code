@@ -1,77 +1,54 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import cats.effect._
 
 import scala.annotation.tailrec
 
-sealed abstract class Source
+object Day7 extends IOApp {
+  sealed trait Source
 
-case class Wire(identifier: String) extends Source
-case class Value(n: Int) extends Source
+  case class Wire(identifier: String) extends Source
+  case class Value(n: Int) extends Source
 
-sealed trait Gate extends Source
-object Gate {
-  case class And(left: Source, right: Source) extends Gate
-  case class Or(left: Source, right: Source) extends Gate
-  case class LeftShift(left: Source, value: Value) extends Gate
-  case class RightShift(left: Source, value: Value) extends Gate
-  case class Not(left: Source) extends Gate
-}
-
-case class Node(wire: Wire, source: Source)
-
-object Node {
-  private val assignmentPattern = "([a-z]+) -> ([a-z]+)".r
-  private val valuePattern = "(\\d+) -> ([a-z]+)".r
-  private val andPattern = "([a-z]+) AND ([a-z]+) -> ([a-z]+)".r
-  private val valueAndPattern = "(\\d+) AND ([a-z]+) -> ([a-z]+)".r
-  private val orPattern = "([a-z]+) OR ([a-z]+) -> ([a-z]+)".r
-  private val leftShiftPattern = "([a-z]+) LSHIFT (\\d+) -> ([a-z]+)".r
-  private val rightShiftPattern = "([a-z]+) RSHIFT (\\d+) -> ([a-z]+)".r
-  private val notPattern = "NOT ([a-z]+) -> ([a-z]+)".r
-
-  def from(line: String): Node = {
-    line match {
-      case assignmentPattern(id1, identifier)      => Node(Wire(identifier), Wire(id1))
-      case valuePattern(value, identifier)         => Node(Wire(identifier), Value(value.toInt))
-      case andPattern(id1, id2, identifier)        => Node(Wire(identifier), Gate.And(Wire(id1), Wire(id2)))
-      case valueAndPattern(value, id1, identifier) => Node(Wire(identifier), Gate.And(Value(value.toInt), Wire(id1)))
-      case orPattern(id1, id2, identifier)         => Node(Wire(identifier), Gate.Or(Wire(id1), Wire(id2)))
-      case leftShiftPattern(id1, value, identifier) =>
-        Node(Wire(identifier), Gate.LeftShift(Wire(id1), Value(value.toInt)))
-      case rightShiftPattern(id1, value, identifier) =>
-        Node(Wire(identifier), Gate.RightShift(Wire(id1), Value(value.toInt)))
-      case notPattern(id1, identifier) => Node(Wire(identifier), Gate.Not(Wire(id1)))
-    }
+  sealed trait Gate extends Source
+  object Gate {
+    case class And(left: Source, right: Source) extends Gate
+    case class Or(left: Source, right: Source) extends Gate
+    case class LeftShift(left: Source, value: Value) extends Gate
+    case class RightShift(left: Source, value: Value) extends Gate
+    case class Not(left: Source) extends Gate
   }
-}
 
-case class Day7Context(filterCircuit: List[Node] => List[Node])
+  case class Node(wire: Wire, source: Source)
 
-object Day7 extends Day[List[Node], Day7Context, Long](2015, 7) {
-  override def transformInput(lines: List[String]): List[Node] =
-    lines.map(Node.from)
+  object Node {
+    private val assignmentPattern = "([a-z]+) -> ([a-z]+)".r
+    private val valuePattern = "(\\d+) -> ([a-z]+)".r
+    private val andPattern = "([a-z]+) AND ([a-z]+) -> ([a-z]+)".r
+    private val valueAndPattern = "(\\d+) AND ([a-z]+) -> ([a-z]+)".r
+    private val orPattern = "([a-z]+) OR ([a-z]+) -> ([a-z]+)".r
+    private val leftShiftPattern = "([a-z]+) LSHIFT (\\d+) -> ([a-z]+)".r
+    private val rightShiftPattern = "([a-z]+) RSHIFT (\\d+) -> ([a-z]+)".r
+    private val notPattern = "NOT ([a-z]+) -> ([a-z]+)".r
 
-  override def partOneContext(): Option[Day7Context] =
-    Some(Day7Context(identity))
-
-  override def partTwoContext(): Option[Day7Context] = {
-    def overrideB(circuit: List[Node]): List[Node] = {
-      circuit.collect { node =>
-        if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(partOneResult.get.toInt))
-        else node
+    def from(line: String): Node = {
+      line match {
+        case assignmentPattern(id1, identifier)      => Node(Wire(identifier), Wire(id1))
+        case valuePattern(value, identifier)         => Node(Wire(identifier), Value(value.toInt))
+        case andPattern(id1, id2, identifier)        => Node(Wire(identifier), Gate.And(Wire(id1), Wire(id2)))
+        case valueAndPattern(value, id1, identifier) => Node(Wire(identifier), Gate.And(Value(value.toInt), Wire(id1)))
+        case orPattern(id1, id2, identifier)         => Node(Wire(identifier), Gate.Or(Wire(id1), Wire(id2)))
+        case leftShiftPattern(id1, value, identifier) =>
+          Node(Wire(identifier), Gate.LeftShift(Wire(id1), Value(value.toInt)))
+        case rightShiftPattern(id1, value, identifier) =>
+          Node(Wire(identifier), Gate.RightShift(Wire(id1), Value(value.toInt)))
+        case notPattern(id1, identifier) => Node(Wire(identifier), Gate.Not(Wire(id1)))
       }
     }
-
-    Some(Day7Context(overrideB))
   }
 
-  override def process(input: List[Node], context: Option[Day7Context]): Option[Long] =
-    context.map { ctx =>
-      val circuit = ctx.filterCircuit(input)
-      val output = emulate(circuit)
-      output("a").toLong
-    }
+  case class Context(filterCircuit: List[Node] => List[Node])
 
   private def emulate(nodes: List[Node]) = {
     @tailrec
@@ -123,4 +100,32 @@ object Day7 extends Day[List[Node], Day7Context, Long](2015, 7) {
 
     iterate(Map.empty, nodes)
   }
+
+  object Runner extends Day[List[Node], Context, Long](2015, 7) {
+    override def transformInput(lines: List[String]): List[Node] =
+      lines.map(Node.from)
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(identity))
+
+    override def partTwoContext(): Option[Context] = {
+      def overrideB(circuit: List[Node]): List[Node] = {
+        circuit.collect { node =>
+          if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(partOneResult.get.toInt))
+          else node
+        }
+      }
+
+      Some(Context(overrideB))
+    }
+
+    override def process(input: List[Node], context: Option[Context]): Option[Long] =
+      context.map { ctx =>
+        val circuit = ctx.filterCircuit(input)
+        val output = emulate(circuit)
+        output("a").toLong
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }
