@@ -28,22 +28,22 @@ object Day23 extends IOApp {
   private def adjacency(input: List[Int], length: Int): Array[Int] = {
     // build an adjacency list of clockwise cups
     // for 123487596, adj(1) == 2, adj(8) == 7, adj(6) == 1 etc
-    val result = Array.fill(length + 1)(0)
+    val adj = Array.fill(length + 1)(0)
 
-    for (i <- 1 until result.length) {
-      if (i <= input.length) {
-        val location = input.indexOf(i)
-        result(i) = if (location == input.length - 1) location + 2 else input(input.indexOf(i) + 1)
-      } else result(i) = i + 1
+    for (cup <- 1 until adj.length) {
+      if (cup <= input.length) {
+        val location = input.indexOf(cup)
+        adj(cup) = if (location == input.length - 1) location + 2 else input(input.indexOf(cup) + 1)
+      } else adj(cup) = cup + 1
     }
 
     if (length == input.length) {
-      result(input.last) = input.head
+      adj(input.last) = input.head
     } else {
-      result(result.length - 1) = input.head
+      adj(adj.length - 1) = input.head
     }
 
-    result
+    adj
   }
 
   private def moveCups(adj: Array[Int], startingCup: Int, count: Int): Array[Int] = {
