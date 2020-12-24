@@ -69,17 +69,8 @@ object Day24 extends IOApp {
     loop(Vector.empty, line.toList)
   }
 
-  private def followDirections(directions: List[Direction]): Tile = {
-    @annotation.tailrec
-    def loop(acc: Tile, remaining: List[Direction]): Tile = {
-      remaining match {
-        case Nil                            => acc
-        case (direction: Direction) :: next => loop(acc.move(direction), next)
-      }
-    }
-
-    loop(Tile(0, 0, 0), directions)
-  }
+  private def followDirections(directions: List[Direction]): Tile =
+    directions.foldLeft(Tile(0, 0, 0)) { case (tile, direction) => tile.move(direction) }
 
   private def tilesToFlip(tiles: List[Tile]): List[Tile] =
     tiles
