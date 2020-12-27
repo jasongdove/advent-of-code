@@ -10,8 +10,8 @@ object Day22 extends IOApp {
   }
 
   case class Boss(hitPoints: Int, damage: Int, defense: Int) {
-    def takeDamage(damage: Int): Boss =
-      Boss(hitPoints - Math.max(damage - defense, 1), damage, defense)
+    def takeDamage(dmg: Int): Boss =
+      Boss(hitPoints - Math.max(dmg - defense, 1), damage, defense)
   }
 
   sealed trait GameResult
@@ -96,7 +96,7 @@ object Day22 extends IOApp {
   private def generateSpellQueues(): Iterator[List[Spell]] = {
     import Spell._
 
-    val size = 10
+    val size = 8
 
     List
       .fill(size)(List[Spell](MagicMissile, Drain, Shield, Poison, Recharge))
@@ -121,9 +121,9 @@ object Day22 extends IOApp {
 
     @annotation.tailrec
     def playRound(
-                   state: GameState,
-                   spellQueue: List[Spell]
-                 ): GameState = {
+      state: GameState,
+      spellQueue: List[Spell]
+    ): GameState = {
       val difficultyState = if (state.isWizardTurn) state.updated(difficulty(state.wizard), state.boss) else state
       if (difficultyState.wizard.hitPoints <= 0) difficultyState.completed(GameResult.WizardDied)
       else {

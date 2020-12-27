@@ -90,7 +90,7 @@ object Day21 extends IOApp {
     override def process(input: Boss, context: Option[Context]): Option[Int] =
       context.map { ctx =>
         val weaponOptions: List[Weapon] = ItemShop.weapons.toList
-        val armorOptions: List[Option[Armor]] = ItemShop.armor.map(Some(_)).toList ++ List(None)
+        val armorOptions: List[Option[Armor]] = ItemShop.armor.map(Some(_)).toList :+ None
         val ringOptions = (ItemShop.rings.map[Option[Ring]](Some(_)).toList ++ List(None, None)).combinations(2).toList
 
         val players = for {

@@ -4,18 +4,18 @@ import adventofcode.Day
 import cats.effect._
 
 object Day2 extends IOApp {
-  case class Box(length: Long, width: Long, height: Long) {
+  case class Box(length: Int, width: Int, height: Int) {
     private val side1 = length * width
     private val side2 = width * height
     private val side3 = height * length
-    private val smallestSide: Long = List(side1, side2, side3).min
-    val requiredPaper: Long = 2 * side1 + 2 * side2 + 2 * side3 + smallestSide
+    private val smallestSide: Int = List(side1, side2, side3).min
+    val requiredPaper: Int = 2 * side1 + 2 * side2 + 2 * side3 + smallestSide
 
     private val p1 = length * 2 + width * 2
     private val p2 = length * 2 + height * 2
     private val p3 = height * 2 + width * 2
-    private val smallestPerimeter: Long = List(p1, p2, p3).min
-    val requiredRibbon: Long = length * width * height + smallestPerimeter
+    private val smallestPerimeter: Int = List(p1, p2, p3).min
+    val requiredRibbon: Int = length * width * height + smallestPerimeter
   }
 
   object Box {
@@ -23,19 +23,19 @@ object Day2 extends IOApp {
 
     def from(line: String): Box = {
       val pattern(length, width, height) = line
-      new Box(length.toLong, width.toLong, height.toLong)
+      new Box(length.toInt, width.toInt, height.toInt)
     }
   }
 
-  case class Context(process: List[Box] => Option[Long])
+  case class Context(process: List[Box] => Option[Int])
 
-  private def processPartOne(input: List[Box]): Option[Long] =
-    Some(input.foldLeft(0L)(_ + _.requiredPaper))
+  private def processPartOne(input: List[Box]): Option[Int] =
+    Some(input.foldLeft(0)(_ + _.requiredPaper))
 
-  private def processPartTwo(input: List[Box]): Option[Long] =
-    Some(input.foldLeft(0L)(_ + _.requiredRibbon))
+  private def processPartTwo(input: List[Box]): Option[Int] =
+    Some(input.foldLeft(0)(_ + _.requiredRibbon))
 
-  object Runner extends Day[List[Box], Context, Long](2015, 2) {
+  object Runner extends Day[List[Box], Context, Int](2015, 2) {
     override def transformInput(lines: List[String]): List[Box] =
       lines.map(Box.from)
 
@@ -45,7 +45,7 @@ object Day2 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(processPartTwo))
 
-    override def process(input: List[Box], context: Option[Context]): Option[Long] =
+    override def process(input: List[Box], context: Option[Context]): Option[Int] =
       context.flatMap(_.process(input))
   }
 

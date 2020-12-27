@@ -35,7 +35,7 @@ object Day13 extends IOApp {
     edges ++ newEdges
   }
 
-  object Runner extends Day[List[Edge[String]], Context, Long](2015, 13) {
+  object Runner extends Day[List[Edge[String]], Context, Int](2015, 13) {
     override def transformInput(lines: List[String]): List[Edge[String]] =
       edgesFrom(lines)
 
@@ -45,11 +45,11 @@ object Day13 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(addNeutralGuest))
 
-    override def process(input: List[Edge[String]], context: Option[Context]): Option[Long] =
+    override def process(input: List[Edge[String]], context: Option[Context]): Option[Int] =
       context.map { ctx =>
         val graph = WeightedGraph.undirectedFrom(ctx.transformEdges(input))
         val weights = graph.adj.flatMap(a => graph.tspWeights(a._1)).flatten.toList
-        weights.max.toLong
+        weights.max
       }
   }
 

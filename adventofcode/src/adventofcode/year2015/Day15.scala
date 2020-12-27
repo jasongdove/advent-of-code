@@ -15,9 +15,9 @@ object Day15 extends IOApp {
     }
   }
 
-  case class Context(teaspoons: Int, caloriesOk: Long => Boolean)
+  case class Context(teaspoons: Int, caloriesOk: Int => Boolean)
 
-  object Runner extends Day[List[Ingredient], Context, Long](2015, 15) {
+  object Runner extends Day[List[Ingredient], Context, Int](2015, 15) {
 
     override def transformInput(lines: List[String]): List[Ingredient] =
       lines.map(Ingredient.from)
@@ -28,9 +28,9 @@ object Day15 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(100, c => c == 500))
 
-    override def process(input: List[Ingredient], context: Option[Context]): Option[Long] = {
-      def scoreForProperty(imap: Map[Ingredient, Int], selector: Ingredient => Int): Long = {
-        val score = imap.map { case (i, q) => selector(i).toLong * q }.sum
+    override def process(input: List[Ingredient], context: Option[Context]): Option[Int] = {
+      def scoreForProperty(imap: Map[Ingredient, Int], selector: Ingredient => Int): Int = {
+        val score = imap.map { case (i, q) => selector(i) * q }.sum
         if (score < 0) 0 else score
       }
 

@@ -6,7 +6,7 @@ import cats.effect._
 object Day4 extends IOApp {
   case class Context(leadingZeros: Int)
 
-  object Runner extends Day[String, Context, Long](2015, 4) {
+  object Runner extends Day[String, Context, Int](2015, 4) {
 
     override def transformInput(lines: List[String]): String =
       lines.mkString
@@ -17,7 +17,7 @@ object Day4 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(6))
 
-    override def process(input: String, context: Option[Context]): Option[Long] = {
+    override def process(input: String, context: Option[Context]): Option[Int] = {
       def hash(str: String): Array[Byte] = java.security.MessageDigest.getInstance("MD5").digest(str.getBytes)
 
       context.flatMap { ctx =>
@@ -27,7 +27,7 @@ object Day4 extends IOApp {
           .takeWhile(_ == '0')
           .length >= ctx.leadingZeros
 
-        LazyList.from(1).map(n => (n, hash(input + n))).find(n => passes(n._2)).map(_._1.toLong)
+        LazyList.from(1).map(n => (n, hash(input + n))).find(n => passes(n._2)).map(_._1.toInt)
       }
     }
   }

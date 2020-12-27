@@ -101,7 +101,7 @@ object Day7 extends IOApp {
     iterate(Map.empty, nodes)
   }
 
-  object Runner extends Day[List[Node], Context, Long](2015, 7) {
+  object Runner extends Day[List[Node], Context, Int](2015, 7) {
     override def transformInput(lines: List[String]): List[Node] =
       lines.map(Node.from)
 
@@ -111,7 +111,7 @@ object Day7 extends IOApp {
     override def partTwoContext(): Option[Context] = {
       def overrideB(circuit: List[Node]): List[Node] = {
         circuit.collect { node =>
-          if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(partOneResult.get.toInt))
+          if (node.wire.identifier == "b") Node(Wire(node.wire.identifier), Value(partOneResult.get))
           else node
         }
       }
@@ -119,11 +119,11 @@ object Day7 extends IOApp {
       Some(Context(overrideB))
     }
 
-    override def process(input: List[Node], context: Option[Context]): Option[Long] =
+    override def process(input: List[Node], context: Option[Context]): Option[Int] =
       context.map { ctx =>
         val circuit = ctx.filterCircuit(input)
         val output = emulate(circuit)
-        output("a").toLong
+        output("a")
       }
   }
 

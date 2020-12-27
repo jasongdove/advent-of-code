@@ -6,13 +6,12 @@ import cats.effect._
 object Day20 extends IOApp {
   case class Context(presentsForHouse: Int => Int)
 
-  private def elvesForHouse(number: Int, firstElf: Int): Set[Int] = {
+  private def elvesForHouse(number: Int, firstElf: Int): Iterable[Int] = {
     Range
       .inclusive(1, Math.sqrt(number.toDouble).toInt)
       .filter(number % _ == 0)
       .flatMap(i => List(i, number / i))
       .filter(_ >= firstElf)
-      .toSet
   }
 
   private def presentsForHousePartOne(number: Int): Int =

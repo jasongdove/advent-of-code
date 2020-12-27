@@ -21,12 +21,12 @@ object Day3 extends IOApp {
       }
   }
 
-  case class Context(process: List[Direction] => Option[Long])
+  case class Context(process: List[Direction] => Option[Int])
 
-  private def processPartOne(input: List[Direction]): Option[Long] =
-    Some(housesWithPresents(input).size.toLong)
+  private def processPartOne(input: List[Direction]): Option[Int] =
+    Some(housesWithPresents(input).size.toInt)
 
-  private def processPartTwo(input: List[Direction]): Option[Long] = {
+  private def processPartTwo(input: List[Direction]): Option[Int] = {
     val santa = input.zipWithIndex.collect {
       case (x, i) if i % 2 == 0 => x
     }
@@ -35,7 +35,7 @@ object Day3 extends IOApp {
     }
 
     val combined = housesWithPresents(santa) ++ housesWithPresents(roboSanta)
-    Some(combined.size.toLong)
+    Some(combined.size.toInt)
   }
 
   private def housesWithPresents(input: List[Direction]): Set[(Int, Int)] = {
@@ -60,7 +60,7 @@ object Day3 extends IOApp {
     loop(Set((0, 0)), 0, 0, input)
   }
 
-  object Runner extends Day[List[Direction], Context, Long](2015, 3) {
+  object Runner extends Day[List[Direction], Context, Int](2015, 3) {
     override def transformInput(lines: List[String]): List[Direction] =
       lines.mkString.trim.map(Direction.from).toList
 
@@ -70,7 +70,7 @@ object Day3 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(processPartTwo))
 
-    override def process(input: List[Direction], context: Option[Context]): Option[Long] =
+    override def process(input: List[Direction], context: Option[Context]): Option[Int] =
       context.flatMap(_.process(input))
   }
 

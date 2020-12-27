@@ -26,7 +26,7 @@ object Day10 extends IOApp {
     loop(input.charAt(0), input.toList, 0)
   }
 
-  object Runner extends Day[String, Context, Long](2015, 10) {
+  object Runner extends Day[String, Context, Int](2015, 10) {
 
     override def transformInput(lines: List[String]): String =
       lines.mkString
@@ -37,10 +37,10 @@ object Day10 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(50))
 
-    override def process(input: String, context: Option[Context]): Option[Long] =
+    override def process(input: String, context: Option[Context]): Option[Int] =
       context.map { ctx =>
         val result = Range(0, ctx.rounds).foldLeft(input)((s, _) => lookAndSay(s))
-        result.length.toLong
+        result.length
       }
   }
 

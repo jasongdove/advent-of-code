@@ -52,7 +52,7 @@ object Day5 extends IOApp {
     notOverlappingPair(str) && repeatsWithSpace(str)
   }
 
-  object Runner extends Day[List[String], Context, Long](2015, 5) {
+  object Runner extends Day[List[String], Context, Int](2015, 5) {
     override def transformInput(lines: List[String]): List[String] = lines
 
     override def partOneContext(): Option[Context] =
@@ -61,9 +61,9 @@ object Day5 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(isNicePartTwo))
 
-    override def process(input: List[String], context: Option[Context]): Option[Long] =
+    override def process(input: List[String], context: Option[Context]): Option[Int] =
       context.map { ctx =>
-        input.count(ctx.classifier).toLong
+        input.count(ctx.classifier)
       }
   }
 

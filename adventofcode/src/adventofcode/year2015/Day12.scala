@@ -23,7 +23,7 @@ object Day12 extends IOApp {
     ()
   }
 
-  object Runner extends Day[ujson.Value, Context, Long](2015, 12) {
+  object Runner extends Day[ujson.Value, Context, Int](2015, 12) {
 
     override def transformInput(lines: List[String]): ujson.Value =
       ujson.read(lines.mkString)
@@ -34,14 +34,14 @@ object Day12 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(filterRed))
 
-    override def process(input: ujson.Value, context: Option[Context]): Option[Long] =
+    override def process(input: ujson.Value, context: Option[Context]): Option[Int] =
       context.map { ctx =>
         ctx.filter(input)
 
-        def traverse(v: ujson.Value): Iterable[Long] = v match {
+        def traverse(v: ujson.Value): Iterable[Int] = v match {
           case a: ujson.Arr => a.arr.flatMap(traverse)
           case o: ujson.Obj => o.obj.values.flatMap(traverse)
-          case n: ujson.Num => Seq(n.value.toLong)
+          case n: ujson.Num => Seq(n.value.toInt)
           case _            => Nil
         }
 
