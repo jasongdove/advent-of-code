@@ -1,39 +1,10 @@
 package adventofcode.year2016
 
 import adventofcode.{Day, Point}
+import cats.effect._
 
-case class Day1Context(process: List[String] => Option[Int])
-
-object Day1 extends Day[List[String], Day1Context, Int](2016, 1) {
-  override def transformInput(lines: List[String]): List[String] =
-    lines.mkString.trim.split(", ").toList
-
-  override def partOneContext(): Option[Day1Context] =
-    Some(Day1Context(processPartOne))
-
-  override def partTwoContext(): Option[Day1Context] =
-    Some(Day1Context(processPartTwo))
-
-  override def process(input: List[String], context: Option[Day1Context]): Option[Int] =
-    context.flatMap(_.process(input))
-
-  private def processPartOne(instructions: List[String]): Option[Int] =
-    walk(instructions).lastOption.map(_.distanceFromOrigin)
-
-  private def processPartTwo(instructions: List[String]): Option[Int] = {
-    @annotation.tailrec
-    def visitedTwice(acc: Set[Point], remaining: List[Point]): Option[Point] = {
-      remaining match {
-        case Nil => None
-        case head :: next =>
-          if (acc.contains(head)) Some(head)
-          else visitedTwice(acc + head, next)
-      }
-    }
-
-    val visited = walk(instructions)
-    visitedTwice(Set.empty, visited.toList).map(_.distanceFromOrigin)
-  }
+object Day1 extends IOApp {
+  case class Context(process: List[String] => Option[Int])
 
   private def walk(instructions: List[String]): Vector[Point] = {
     val instructionPattern = "([RL])(\\d+)".r
@@ -60,4 +31,38 @@ object Day1 extends Day[List[String], Day1Context, Int](2016, 1) {
 
     visited(Vector.empty, Point(0, 0), 0, instructions)
   }
+
+  private def processPartOne(instructions: List[String]): Option[Int] =
+    walk(instructions).lastOption.map(_.distanceFromOrigin)
+
+  private def processPartTwo(instructions: List[String]): Option[Int] = {
+    @annotation.tailrec
+    def visitedTwice(acc: Set[Point], remaining: List[Point]): Option[Point] = {
+      remaining match {
+        case Nil => None
+        case head :: next =>
+          if (acc.contains(head)) Some(head)
+          else visitedTwice(acc + head, next)
+      }
+    }
+
+    val visited = walk(instructions)
+    visitedTwice(Set.empty, visited.toList).map(_.distanceFromOrigin)
+  }
+
+  object Runner extends Day[List[String], Context, Int](2016, 1) {
+    override def transformInput(lines: List[String]): List[String] =
+      lines.mkString.trim.split(", ").toList
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(processPartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(processPartTwo))
+
+    override def process(input: List[String], context: Option[Context]): Option[Int] =
+      context.flatMap(_.process(input))
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

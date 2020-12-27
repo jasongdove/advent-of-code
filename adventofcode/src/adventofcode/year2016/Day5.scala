@@ -1,22 +1,10 @@
 package adventofcode.year2016
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day5Context(process: String => String)
-
-object Day5 extends Day[String, Day5Context, String](2016, 5) {
-
-  override def transformInput(lines: List[String]): String =
-    lines.mkString.trim
-
-  override def partOneContext(): Option[Day5Context] =
-    Some(Day5Context(processPartOne))
-
-  override def partTwoContext(): Option[Day5Context] =
-    Some(Day5Context(processPartTwo))
-
-  override def process(input: String, context: Option[Day5Context]): Option[String] =
-    context.map(_.process(input))
+object Day5 extends IOApp {
+  case class Context(process: String => String)
 
   private def processPartOne(input: String): String = {
     @annotation.tailrec
@@ -69,4 +57,20 @@ object Day5 extends Day[String, Day5Context, String](2016, 5) {
       .map { case (finish, hash) => (finish, hash.map("%02x".format(_)).mkString) }
       .head
   }
+
+  object Runner extends Day[String, Context, String](2016, 5) {
+    override def transformInput(lines: List[String]): String =
+      lines.mkString.trim
+
+    override def partOneContext(): Option[Context] =
+      Some(Context(processPartOne))
+
+    override def partTwoContext(): Option[Context] =
+      Some(Context(processPartTwo))
+
+    override def process(input: String, context: Option[Context]): Option[String] =
+      context.map(_.process(input))
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }

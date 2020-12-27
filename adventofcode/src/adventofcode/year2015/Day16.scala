@@ -51,7 +51,6 @@ object Day16 extends IOApp {
 
   case class Context(score: Aunt => Int)
 
-
   def partOneCompare(aunt: Aunt): Int = {
     def score(selector: Aunt => Option[Int]) =
       selector(aunt) match {
