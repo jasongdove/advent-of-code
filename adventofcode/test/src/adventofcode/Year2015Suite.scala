@@ -26,7 +26,7 @@ object Year2015Suite extends BaseSuite {
   aocTest(Day6.Runner, Two, Real, 15343601)
 
   aocTest(Day7.Runner, One, Real, 16076)
-  simpleTest("day 7 part 2 solution") {
+  test("day 7 part 2 solution") {
     import Day7.Runner._
     for {
       inputOne <- realInput()

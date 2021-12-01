@@ -29,7 +29,7 @@ abstract class BaseSuite extends SimpleIOSuite {
     expectedResult: C
   ): Unit = {
     val solutionOrExample = if (resourceType == ResourceType.Real) "solution" else "example"
-    simpleTest(s"day ${day.dayNumber} part $partNumber $solutionOrExample") {
+    test(s"day ${day.dayNumber} part $partNumber $solutionOrExample") {
       for {
         input <- resourceFor(day, resourceType, partNumber)
         result <- IO(day.process(input, customContext))

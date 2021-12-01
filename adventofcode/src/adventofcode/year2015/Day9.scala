@@ -23,11 +23,11 @@ object Day9 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(l => Some(l.max)))
 
-    override def process(input: WeightedGraph[String], context: Option[Context]): Option[Int] = context.flatMap {
-      ctx =>
+    override def process(input: WeightedGraph[String], context: Option[Context]): Option[Int] =
+      context.flatMap { ctx =>
         val weights = input.adj.flatMap(a => input.hamiltonianWeights(a._1)).flatten.toList
         ctx.aggregate(weights)
-    }
+      }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

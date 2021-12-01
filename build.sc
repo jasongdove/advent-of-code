@@ -1,22 +1,20 @@
-import mill._, scalalib._
+import mill._, scalalib._, scalafmt._
 
-object adventofcode extends ScalaModule {
-  def scalaVersion = "2.13.4"
+object adventofcode extends ScalaModule with ScalafmtModule {
+  def scalaVersion = "2.13.7"
 
   def ivyDeps =
     Agg(
-      ivy"org.typelevel::cats-effect:2.1.3",
-      ivy"com.lihaoyi::os-lib:0.7.0",
-      ivy"com.lihaoyi::upickle:1.2.2"
+      ivy"org.typelevel::cats-effect:3.3.0",
+      ivy"com.lihaoyi::os-lib:0.7.8",
+      ivy"com.lihaoyi::upickle:1.4.2"
     )
 
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"com.disneystreaming::weaver-framework:0.5.0",
-      ivy"com.disneystreaming::weaver-scalacheck:0.5.0",
-      ivy"com.disneystreaming::weaver-zio:0.5.0"
+      ivy"com.disneystreaming::weaver-cats:0.7.7"
     )
-    def testFrameworks = Seq("weaver.framework.TestFramework")
+    def testFramework = "weaver.framework.CatsEffect"
   }
 
   def scalacOptions =

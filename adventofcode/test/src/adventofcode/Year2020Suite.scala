@@ -24,7 +24,7 @@ object Year2020Suite extends BaseSuite {
 
   aocTest(Day4, One, Example, 2L)
   aocTest(Day4, One, Real, 170L)
-  simpleTest("day 4 part 2 example") {
+  test("day 4 part 2 example") {
     import Day4._
     for {
       inputOne <- linesOfInput("day4-example-invalid.txt")(transformInput)
@@ -58,7 +58,7 @@ object Year2020Suite extends BaseSuite {
 
   aocTest(Day9, One, Example, Day9Context(Day9.processPartOne(5)), 127L)
   aocTest(Day9, One, Real, 542529149L)
-  simpleTest("day 9 part 2 example") {
+  test("day 9 part 2 example") {
     import Day9._
     for {
       inputOne <- exampleInput()
@@ -71,7 +71,7 @@ object Year2020Suite extends BaseSuite {
     } yield success
   }
 
-  simpleTest("day 9 part 2 solution") {
+  test("day 9 part 2 solution") {
     import Day9._
     for {
       inputOne <- realInput()
