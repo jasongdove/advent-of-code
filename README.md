@@ -8,3 +8,4 @@ This repo contains my [Advent of Code](https://adventofcode.com) solutions writt
 - 2018
 - 2019
 - [2020](adventofcode/src/adventofcode/year2020)
+- [2021](adventofcode/src/adventofcode/year2021)

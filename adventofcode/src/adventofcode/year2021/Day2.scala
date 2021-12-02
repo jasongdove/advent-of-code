@@ -13,22 +13,21 @@ object Day2 extends IOApp {
     case class Down(num: Int) extends Instruction
     case class Up(num: Int) extends Instruction
     case class Forward(num: Int) extends Instruction
-  }
 
-  case class InstructionImpl(eval: (Int, Location) => Location)
+    def from(line: String): Instruction =
+      line.split(' ') match {
+        case Array("up", i)      => Instruction.Up(i.toInt)
+        case Array("down", i)    => Instruction.Down(i.toInt)
+        case Array("forward", i) => Instruction.Forward(i.toInt)
+      }
+  }
 
   case class Context(process: (Location, Instruction) => Location)
   case class Location(horiz: Int, depth: Int, aim: Int)
 
   object Runner extends Day[List[Instruction], Context, Int](2021, 2) {
     override def transformInput(lines: List[String]): List[Instruction] =
-      lines.map { line =>
-        line.split(' ') match {
-          case Array("up", i)      => Instruction.Up(i.toInt)
-          case Array("down", i)    => Instruction.Down(i.toInt)
-          case Array("forward", i) => Instruction.Forward(i.toInt)
-        }
-      }
+      lines.map(Instruction.from)
 
     override def partOneContext(): Option[Context] =
       Some(
