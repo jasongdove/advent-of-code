@@ -17,7 +17,7 @@ object Day2 extends IOApp {
 
   case class InstructionImpl(eval: (Int, Location) => Location)
 
-  case class Context(down: InstructionImpl, up: InstructionImpl, forward: InstructionImpl)
+  case class Context(process: (Location, Instruction) => Location)
   case class Location(horiz: Int, depth: Int, aim: Int)
 
   object Runner extends Day[List[Instruction], Context, Int](2021, 2) {
@@ -32,31 +32,29 @@ object Day2 extends IOApp {
 
     override def partOneContext(): Option[Context] =
       Some(
-        Context(
-          InstructionImpl((i, l) => Location(l.horiz, l.depth + i, l.aim)),
-          InstructionImpl((i, l) => Location(l.horiz, l.depth - i, l.aim)),
-          InstructionImpl((i, l) => Location(l.horiz + i, l.depth, l.aim))
-        )
+        Context((loc: Location, instruction: Instruction) => {
+          instruction match {
+            case Instruction.Down(num)    => loc.copy(depth = loc.depth + num)
+            case Instruction.Up(num)      => loc.copy(depth = loc.depth - num)
+            case Instruction.Forward(num) => loc.copy(horiz = loc.horiz + num)
+          }
+        })
       )
 
     override def partTwoContext(): Option[Context] =
       Some(
-        Context(
-          InstructionImpl((i, l) => Location(l.horiz, l.depth, l.aim + i)),
-          InstructionImpl((i, l) => Location(l.horiz, l.depth, l.aim - i)),
-          InstructionImpl((i, l) => Location(l.horiz + i, l.depth + l.aim * i, l.aim))
-        )
+        Context((loc: Location, instruction: Instruction) => {
+          instruction match {
+            case Instruction.Down(num)    => loc.copy(aim = loc.aim + num)
+            case Instruction.Up(num)      => loc.copy(aim = loc.aim - num)
+            case Instruction.Forward(num) => loc.copy(horiz = loc.horiz + num, depth = loc.depth + loc.aim * num)
+          }
+        })
       )
 
     override def process(input: List[Instruction], context: Option[Context]): Option[Int] =
       context.map { ctx =>
-        val location = input.foldLeft(Location(0, 0, 0))((l, d) => {
-          d match {
-            case Instruction.Down(num)    => ctx.down.eval(num, l)
-            case Instruction.Up(num)      => ctx.up.eval(num, l)
-            case Instruction.Forward(num) => ctx.forward.eval(num, l)
-          }
-        })
+        val location = input.foldLeft(Location(0, 0, 0))(ctx.process)
         location.depth * location.horiz
       }
   }
