@@ -1,21 +1,27 @@
 package adventofcode.year2021
 
 import adventofcode.Day
+import cats.effect._
 
-case class Day1Context(preprocess: List[Int] => List[Int])
+object Day1 extends IOApp {
 
-object Day1 extends Day[List[Int], Day1Context, Int](2021, 1) {
-  override def transformInput(lines: List[String]): List[Int] =
-    lines.flatMap(_.toIntOption)
+  case class Context(preprocess: List[Int] => List[Int])
 
-  override def partOneContext(): Option[Day1Context] =
-    Some(Day1Context(identity))
+  object Runner extends Day[List[Int], Context, Int](2021, 1) {
+    override def transformInput(lines: List[String]): List[Int] =
+      lines.flatMap(_.toIntOption)
 
-  override def partTwoContext(): Option[Day1Context] =
-    Some(Day1Context(lst => lst.sliding(3).map(_.sum).toList))
+    override def partOneContext(): Option[Context] =
+      Some(Context(identity))
 
-  override def process(input: List[Int], context: Option[Day1Context]): Option[Int] =
-    context.map { ctx =>
-      ctx.preprocess(input).sliding(2).count(lst => lst(1) > lst(0))
-    }
+    override def partTwoContext(): Option[Context] =
+      Some(Context(lst => lst.sliding(3).map(_.sum).toList))
+
+    override def process(input: List[Int], context: Option[Context]): Option[Int] =
+      context.map { ctx =>
+        ctx.preprocess(input).sliding(2).count(lst => lst(1) > lst(0))
+      }
+  }
+
+  override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
 }
