@@ -12,4 +12,8 @@ package object utils {
     def rotate180(): List[String] = list.map(_.toList).rotate180().map(_.mkString)
     def rotate270(): List[String] = list.map(_.toList).rotate270().map(_.mkString)
   }
+
+  implicit class BinaryStringToInt(string: String) {
+    def parseBinaryToInt(): Int = Integer.parseInt(string, 2)
+  }
 }
