@@ -15,7 +15,7 @@ object Day1 extends IOApp {
       Some(Context(identity))
 
     override def partTwoContext(): Option[Context] =
-      Some(Context(lst => lst.sliding(3).map(_.sum).toList))
+      Some(Context(_.sliding(3).map(_.sum).toList))
 
     override def process(input: List[Int], context: Option[Context]): Option[Int] =
       context.map { ctx =>

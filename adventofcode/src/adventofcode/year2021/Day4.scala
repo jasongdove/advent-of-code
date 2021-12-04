@@ -22,7 +22,7 @@ object Day4 extends IOApp {
         4 to 24 by 5
       )
 
-      wins.exists(r => r.forall(i => numbers.contains(arr(i))))
+      wins.exists(_.forall(i => numbers.contains(arr(i))))
     }
   }
 
@@ -66,7 +66,7 @@ object Day4 extends IOApp {
       @annotation.tailrec
       def loop(len: Int): (List[Int], Board) = {
         val slice = input.numbers.take(len).toList
-        val winner = input.boards.filter(b => b.isWinner(slice))
+        val winner = input.boards.filter(_.isWinner(slice))
         if (winner.length == 1)
           (slice, winner.head)
         else
@@ -81,7 +81,7 @@ object Day4 extends IOApp {
       @annotation.tailrec
       def loop(len: Int, acc: List[Board]): (List[Int], Board) = {
         val slice = input.numbers.take(len).toList
-        val nonWinners = acc.filterNot(b => b.isWinner(slice))
+        val nonWinners = acc.filterNot(_.isWinner(slice))
         if (acc.length == 1 && nonWinners.length == 0)
           (slice, acc.head)
         else

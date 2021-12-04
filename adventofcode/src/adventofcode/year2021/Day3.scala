@@ -24,8 +24,8 @@ object Day3 extends IOApp {
     private def commonString(input: List[String], target: Char): Int =
       (0 until input.head.length)
         .map(i => {
-          val a = input.count(l => l(i) == target)
-          val b = input.count(l => l(i) != target)
+          val a = input.count(_(i) == target)
+          val b = input.count(_(i) != target)
           if (a > b) '1' else '0'
         })
         .mkString
@@ -36,10 +36,10 @@ object Day3 extends IOApp {
       def loop(i: Int, acc: List[String]): String = {
         if (acc.size == 1) acc.head
         else {
-          val one = acc.count(s => s(i) == '1')
-          val zero = acc.count(s => s(i) == '0')
+          val one = acc.count(_(i) == '1')
+          val zero = acc.count(_(i) == '0')
           val filter = if (one >= zero) positive else negative
-          loop(i + 1, acc.filter(s => s(i) == filter))
+          loop(i + 1, acc.filter(_(i) == filter))
         }
       }
 
