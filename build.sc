@@ -3,6 +3,12 @@ import mill._, scalalib._, scalafmt._
 object adventofcode extends ScalaModule with ScalafmtModule {
   def scalaVersion = "2.13.7"
 
+  // try to limit bad algorithms from hanging the system
+  def forkArgs = Seq(
+    "-Xms64m",
+    "-Xmx1g"
+  )
+
   def ivyDeps =
     Agg(
       ivy"org.typelevel::cats-effect:3.3.0",
