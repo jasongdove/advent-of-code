@@ -35,47 +35,42 @@ object Day13 extends IOApp {
     private def processPartOne(target: Point)(input: Input): Int = {
       val maze = Maze(input.favoriteNumber)
 
-      val q = scala.collection.mutable.Queue[(Point, Int)]((Point(1, 1), 0))
-
       @annotation.tailrec
-      def loop(visited: List[Point]): Int = {
-        val (current, dist) = q.dequeue()
-        if (current == target) dist
-        else {
-          val nextPoints = current.adjacent
-            .filter(p => p.x >= 0 && p.y >= 0)
-            .filterNot(visited.contains)
-            .filter(maze.isOpen)
-          nextPoints.foreach(p => q.enqueue((p, dist + 1)))
-          loop(visited ++ nextPoints)
+      def loop(visited: List[Point], q: Vector[(Point, Int)]): Int = {
+        q match {
+          case (current: Point, dist: Int) +: _ if current == target => dist
+          case (current: Point, dist: Int) +: tail =>
+            val nextPoints = current.adjacent
+              .filter(p => p.x >= 0 && p.y >= 0)
+              .filterNot(visited.contains)
+              .filter(maze.isOpen)
+            loop(visited ++ nextPoints, tail ++ nextPoints.map(p => (p, dist + 1)))
+          case _ => 0
         }
       }
 
-      loop(List(Point(1, 1)))
+      loop(List(Point(1, 1)), Vector((Point(1, 1), 0)))
     }
 
     private def processPartTwo(maxDistance: Int)(input: Input): Int = {
       val maze = Maze(input.favoriteNumber)
 
-      val q = scala.collection.mutable.Queue[(Point, Int)]((Point(1, 1), 0))
-
       @annotation.tailrec
-      def loop(matching: Int, visited: List[Point]): Int = {
-        if (q.isEmpty) matching
-        else {
-          val (current, dist) = q.dequeue()
-          val nextMatching = if (dist <= maxDistance) matching + 1 else matching
-          val nextPoints = current.adjacent
-            .filter(p => p.x >= 0 && p.y >= 0)
-            .filter(_ => dist + 1 <= 50)
-            .filterNot(visited.contains)
-            .filter(maze.isOpen)
-          nextPoints.foreach(p => q.enqueue((p, dist + 1)))
-          loop(nextMatching, visited ++ nextPoints)
+      def loop(matching: Int, visited: List[Point], q: Vector[(Point, Int)]): Int = {
+        q match {
+          case (current: Point, dist: Int) +: tail =>
+            val nextMatching = if (dist <= maxDistance) matching + 1 else matching
+            val nextPoints = current.adjacent
+              .filter(p => p.x >= 0 && p.y >= 0)
+              .filter(_ => dist + 1 <= 50)
+              .filterNot(visited.contains)
+              .filter(maze.isOpen)
+            loop(nextMatching, visited ++ nextPoints, tail ++ nextPoints.map(p => (p, dist + 1)))
+          case _ => matching
         }
       }
 
-      loop(0, List(Point(1, 1)))
+      loop(0, List(Point(1, 1)), Vector((Point(1, 1), 0)))
     }
   }
 
