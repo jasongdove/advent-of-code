@@ -16,4 +16,10 @@ package object utils {
   implicit class BinaryStringToInt(string: String) {
     def parseBinaryToInt(): Int = Integer.parseInt(string, 2)
   }
+
+  implicit class StringToMD5Hex(string: String) {
+    def toMd5Hex: String = org.apache.commons.codec.digest.DigestUtils
+      .md5Hex(string)
+      .toLowerCase()
+  }
 }

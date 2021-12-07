@@ -13,7 +13,8 @@ object adventofcode extends ScalaModule with ScalafmtModule {
     Agg(
       ivy"org.typelevel::cats-effect:3.3.0",
       ivy"com.lihaoyi::os-lib:0.7.8",
-      ivy"com.lihaoyi::upickle:1.4.2"
+      ivy"com.lihaoyi::upickle:1.4.2",
+      ivy"commons-codec:commons-codec:1.15"
     )
 
   object test extends Tests {
