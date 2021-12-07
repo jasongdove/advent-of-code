@@ -1,3 +1,8 @@
+// using scala 2.13
+// using lib org.typelevel::cats-effect:3.3.0
+// using lib com.lihaoyi::os-lib:0.7.8
+// using lib commons-codec:commons-codec:1.15
+
 package adventofcode
 
 package object utils {

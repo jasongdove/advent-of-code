@@ -5,3 +5,6 @@ out/
 adventofcode/resources/
 .idea/
 .bsp/
+.scala/
+resources/
+lib/
