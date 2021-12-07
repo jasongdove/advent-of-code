@@ -1,3 +1,5 @@
+// using lib com.disneystreaming::weaver-cats:0.7.7
+
 package adventofcode
 
 import adventofcode.year2016._
