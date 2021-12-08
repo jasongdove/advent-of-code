@@ -9,40 +9,41 @@ object Day8 extends IOApp {
     val ez = outputValues.count(v => List(2, 3, 4, 7).contains(v.length()))
 
     val output = {
-      val one = signalPatterns.find(_.length == 2).head
-      val four = signalPatterns.find(_.length == 4).head
-      val seven = signalPatterns.find(_.length == 3).head
-      val eight = signalPatterns.find(_.length == 7).head
+      val one = signalPatterns.find(_.length == 2).head.toSet
+      val four = signalPatterns.find(_.length == 4).head.toSet
+      val seven = signalPatterns.find(_.length == 3).head.toSet
+      val eight = signalPatterns.find(_.length == 7).head.toSet
 
-      val has_five = signalPatterns.filter(_.length == 5).toList
-      val has_six = signalPatterns.filter(_.length == 6).toList
+      val has_five = signalPatterns.filter(_.length == 5).map(_.toSet).toList
+      val has_six = signalPatterns.filter(_.length == 6).map(_.toSet).toList
 
-      val zero = has_six.find(s => one.forall(c => s.contains(c)) && four.exists(c => !s.toSet.contains(c))).head
+      val zero = has_six.find(s => one.forall(c => s.contains(c)) && four.exists(c => !s.toSet.contains(c))).head.toSet
       val seg_d = four.find(c => !zero.contains(c)).head
 
-      val six = has_six.filterNot(_ == zero).find(s => four.exists(c => !s.contains(c))).head
-      val nine = has_six.filterNot(s => s == zero || s == six).head
+      val six = has_six.filterNot(_ == zero).find(s => four.exists(c => !s.contains(c))).head.toSet
+      val nine = has_six.filterNot(s => s == zero || s == six).head.toSet
 
       val seg_c = one.find(c => !six.contains(c)).head
       val seg_e = eight.find(c => !nine.contains(c)).head
 
-      val two = has_five.find(s => s.contains(seg_c) && s.contains(seg_e)).head
-      val five = has_five.filterNot(_ == two).find(s => !s.contains(seg_c)).head
-      val three = has_five.filterNot(s => s == two || s == five).head
+      val two = has_five.find(s => s.contains(seg_c) && s.contains(seg_e)).head.toSet
+      val five = has_five.filterNot(_ == two).find(s => !s.contains(seg_c)).head.toSet
+      val three = has_five.filterNot(s => s == two || s == five).head.toSet
 
       outputValues
         .map { v =>
-          val vset = v.toSet
-          if (vset == zero.toSet) '0'
-          else if (vset == one.toSet) '1'
-          else if (vset == two.toSet) '2'
-          else if (vset == three.toSet) '3'
-          else if (vset == four.toSet) '4'
-          else if (vset == five.toSet) '5'
-          else if (vset == six.toSet) '6'
-          else if (vset == seven.toSet) '7'
-          else if (vset == eight.toSet) '8'
-          else '9'
+          v.toSet match {
+            case `zero`  => '0'
+            case `one`   => '1'
+            case `two`   => '2'
+            case `three` => '3'
+            case `four`  => '4'
+            case `five`  => '5'
+            case `six`   => '6'
+            case `seven` => '7'
+            case `eight` => '8'
+            case _       => '9'
+          }
         }
         .mkString
         .toInt
