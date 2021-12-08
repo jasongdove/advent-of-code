@@ -48,5 +48,5 @@ object Year2016Suite extends BaseSuite {
   aocTest(Day14.Runner, One, Example, 22728)
   aocTest(Day14.Runner, One, Real, 18626)
   aocTest(Day14.Runner, Two, Example, 22551)
-  aocTest(Day14.Runner, Two, Real, 0)
+  aocTest(Day14.Runner, Two, Real, 20092)
 }

@@ -15,17 +15,17 @@ object Day14 extends IOApp {
 
   case class Context(hashProcess: String => String)
 
-  case class Hash(input: String, hashProcess: String => String) {
+  case class Hash(input: String, index: Int, hashProcess: String => String) {
     val hash = hashProcess(input.toMd5Hex)
 
     val threes = hash
       .sliding(3)
-      .find(s => s(0) == s(1) && s(1) == s(2))
+      .find(s => s.length == 3 && s(0) == s(1) && s(1) == s(2))
       .map(_.head)
 
     val fives = hash
       .sliding(5)
-      .find(s => s(0) == s(1) && s(1) == s(2) && s(2) == s(3) && s(3) == s(4))
+      .find(s => s.length == 5 && s(0) == s(1) && s(1) == s(2) && s(2) == s(3) && s(3) == s(4))
       .map(_.head)
   }
 
@@ -43,45 +43,18 @@ object Day14 extends IOApp {
       context.map(ctx => process(input, ctx.hashProcess))
 
     private def process(input: Input, hashProcess: String => String): Int = {
-      @annotation.tailrec
-      def loop(n: Int, threes: Map[Char, List[Int]], keys: Vector[Int]): Int = {
-        if (keys.length >= 64) {
-          // println(keys.length)
-          // println(keys.sorted.zipWithIndex.map {
-          //   case (i: Int, i2: Int) => {
-          //     val hash = Hash(input.salt + i, hashProcess).hash
-          //     s"${i2 + 1}: $i $hash"
-          //   }
-          // }.mkString("\n"))
-          keys.sorted.toList(63)
-        } else {
-          val hash = Hash(input.salt + n, hashProcess)
-          // if (n == 0)
-          //   println(hash.hash)
-          val keysToAdd = hash.fives
-            .map { five =>
-              val min = Integer.max(0, n - 1000)
-              if (min < n) {
-                (min until n)
-                  .filterNot(keys.contains)
-                  .filter(i => threes.get(five).isDefined && threes(five).contains(i))
-                  .toSet
-              } else Set.empty[Int]
-            }
-            .getOrElse(Set.empty)
-            .toSet
-          val nextThrees = hash.threes
-            .map { c =>
-              val current = threes.getOrElse(c, List.empty)
-              threes.updated(c, current :+ n)
-            }
-            .getOrElse(threes)
+      val allHashes = (0 to 25_000).map(i => Hash(input.salt + i, i, hashProcess))
+      val keys = allHashes
+        .filter(h =>
+          h.threes match {
+            case None        => false
+            case Some(three) => allHashes.slice(h.index + 1, h.index + 1000).exists(_.fives.contains(three))
+          }
+        )
+        .take(64)
+        .toList
 
-          loop(n + 1, nextThrees, keys ++ keysToAdd)
-        }
-      }
-
-      loop(0, Map.empty, Vector.empty)
+      keys.last.index
     }
   }
 
