@@ -55,4 +55,7 @@ object Year2016Suite extends BaseSuite {
 
   aocTest(Day16.Runner, One, Real, "10010010110011010")
   aocTest(Day16.Runner, Two, Real, "01010100101011100")
+
+  aocTest(Day17.Runner, One, Real, "RLDUDRDDRR")
+  aocTest(Day17.Runner, Two, Real, "590")
 }
