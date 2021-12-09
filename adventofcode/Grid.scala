@@ -1,11 +1,22 @@
 package adventofcode
 
+case class GridValue[A](location: GridLocation, value: A)
 case class GridLocation(row: Int, col: Int)
 case class Grid[A](rows: Int, columns: Int, data: Map[GridLocation, A]) {
   def updated(location: GridLocation, value: A): Grid[A] =
     Grid(rows, columns, data.updated(location, value))
   def apply(row: Int, column: Int): A = data(GridLocation(row, column))
   def get(row: Int, column: Int): Option[A] = data.get(GridLocation(row, column))
+  def neighbors(row: Int, column: Int): List[GridValue[A]] = {
+    List(
+      GridLocation(row - 1, column),
+      GridLocation(row + 1, column),
+      GridLocation(row, column - 1),
+      GridLocation(row, column + 1)
+    ).filter(loc => loc.row >= 0 && loc.row < rows && loc.col >= 0 && loc.col < columns)
+      .map(loc => GridValue(loc, data(loc)))
+      .toList
+  }
 }
 
 object Grid {
