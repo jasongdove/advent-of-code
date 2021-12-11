@@ -7,7 +7,7 @@ case class Grid[A](rows: Int, columns: Int, data: Map[GridLocation, A]) {
     Grid(rows, columns, data.updated(location, value))
   def apply(row: Int, column: Int): A = data(GridLocation(row, column))
   def get(row: Int, column: Int): Option[A] = data.get(GridLocation(row, column))
-  def neighbors(row: Int, column: Int): List[GridValue[A]] = {
+  def neighbors(row: Int, column: Int): Iterable[GridValue[A]] =
     List(
       GridLocation(row - 1, column),
       GridLocation(row + 1, column),
@@ -15,8 +15,19 @@ case class Grid[A](rows: Int, columns: Int, data: Map[GridLocation, A]) {
       GridLocation(row, column + 1)
     ).filter(loc => loc.row >= 0 && loc.row < rows && loc.col >= 0 && loc.col < columns)
       .map(loc => GridValue(loc, data(loc)))
-      .toList
-  }
+  def diagonalNeighbors(row: Int, column: Int): Iterable[GridValue[A]] =
+    List(
+      GridLocation(row - 1, column - 1),
+      GridLocation(row - 1, column),
+      GridLocation(row - 1, column + 1),
+      GridLocation(row, column - 1),
+      GridLocation(row, column + 1),
+      GridLocation(row + 1, column - 1),
+      GridLocation(row + 1, column),
+      GridLocation(row + 1, column + 1)
+    ).filter(loc => loc.row >= 0 && loc.row < rows && loc.col >= 0 && loc.col < columns)
+      .map(loc => GridValue(loc, data(loc)))
+  def allLocations(): Iterable[GridLocation] = data.map(_._1)
 }
 
 object Grid {
