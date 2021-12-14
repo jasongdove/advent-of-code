@@ -97,7 +97,7 @@ object Day13 extends IOApp {
     private def printGrid(grid: Grid[Boolean]) = {
       for (r <- 0 until grid.rows) {
         for (c <- 0 until grid.columns) {
-          print(if (grid.data(GridLocation(r, c))) '#' else '.')
+          print(if (grid.data(GridLocation(r, c))) '$' else ' ')
         }
         println()
       }
