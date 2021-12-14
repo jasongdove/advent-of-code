@@ -1,6 +1,7 @@
 package adventofcode.year2021
 
 import adventofcode.Day
+import adventofcode.utils._
 import cats.effect._
 
 object Day5 extends IOApp {
@@ -59,9 +60,7 @@ object Day5 extends IOApp {
       context.map(ctx => {
         val pointFreq = input.pointRanges
           .flatMap(_.points(ctx.diagonal))
-          .groupBy(identity)
-          .view
-          .mapValues(_.size)
+          .frequency
           .toList
 
         pointFreq.count(_._2 > 1)

@@ -1,6 +1,10 @@
+// using java-opt -Xms64m
+// using java-opt -Xmx1g
+
 package adventofcode.year2020
 
 import adventofcode.Day
+import adventofcode.utils._
 import cats.effect._
 
 object Day24 extends IOApp {
@@ -74,9 +78,7 @@ object Day24 extends IOApp {
 
   private def tilesToFlip(tiles: List[Tile]): List[Tile] =
     tiles
-      .groupBy(identity)
-      .view
-      .mapValues(_.size)
+      .frequency
       .collect {
         case (tile, size) if size % 2 == 1 => tile
       }

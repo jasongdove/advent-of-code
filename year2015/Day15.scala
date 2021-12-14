@@ -1,6 +1,7 @@
 package adventofcode.year2015
 
 import adventofcode.Day
+import adventofcode.utils._
 import cats.effect._
 
 object Day15 extends IOApp {
@@ -15,9 +16,9 @@ object Day15 extends IOApp {
     }
   }
 
-  case class Context(teaspoons: Int, caloriesOk: Int => Boolean)
+  case class Context(teaspoons: Int, caloriesOk: Long => Boolean)
 
-  object Runner extends Day[List[Ingredient], Context, Int](2015, 15) {
+  object Runner extends Day[List[Ingredient], Context, Long](2015, 15) {
 
     override def transformInput(lines: List[String]): List[Ingredient] =
       lines.map(Ingredient.from)
@@ -28,8 +29,8 @@ object Day15 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(100, c => c == 500))
 
-    override def process(input: List[Ingredient], context: Option[Context]): Option[Int] = {
-      def scoreForProperty(imap: Map[Ingredient, Int], selector: Ingredient => Int): Int = {
+    override def process(input: List[Ingredient], context: Option[Context]): Option[Long] = {
+      def scoreForProperty(imap: Map[Ingredient, Long], selector: Ingredient => Int): Long = {
         val score = imap.map { case (i, q) => selector(i) * q }.sum
         if (score < 0) 0 else score
       }
@@ -39,7 +40,7 @@ object Day15 extends IOApp {
           .flatMap(i => Range(0, ctx.teaspoons).map(_ => i))
           .combinations(ctx.teaspoons)
           .map { ingredients =>
-            val imap = ingredients.groupBy(identity).view.mapValues(_.size).toMap
+            val imap = ingredients.frequency
             val calories = scoreForProperty(imap, _.calories)
             if (ctx.caloriesOk(calories)) {
               val capacity = scoreForProperty(imap, _.capacity)

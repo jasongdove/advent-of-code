@@ -2,6 +2,7 @@ package adventofcode.year2021
 
 import cats.effect._
 import adventofcode._
+import adventofcode.utils._
 
 object Day12 extends IOApp {
 
@@ -63,9 +64,7 @@ object Day12 extends IOApp {
 
       val sizes = path
         .filter(lower.contains)
-        .groupBy(identity)
-        .view
-        .mapValues(_.size)
+        .frequency
 
       sizes.forall(_._2 == 1)
     }
@@ -75,9 +74,7 @@ object Day12 extends IOApp {
 
       val sizes = path
         .filter(lower.contains)
-        .groupBy(identity)
-        .view
-        .mapValues(_.size)
+        .frequency
 
       sizes.forall(_._2 <= 2) && sizes.count(_._2 > 1) <= 1
     }

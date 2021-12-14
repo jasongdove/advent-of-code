@@ -28,9 +28,9 @@ package object utils {
       .toLowerCase()
   }
 
-  implicit class ListFrequency[A](list: List[A]) {
+  implicit class SeqFrequency[A](seq: Seq[A]) {
     def frequency(): Map[A, Long] =
-      list
+      seq
         .groupBy(identity)
         .view
         .mapValues(_.size.toLong)

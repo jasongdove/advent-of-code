@@ -65,10 +65,10 @@ object Year2015Suite extends BaseSuite {
   aocTest(Day14.Runner, Two, Example, Day14.Context(Day14.partTwoScoring(1000)), 689)
   aocTest(Day14.Runner, Two, Real, 1102)
 
-  aocTest(Day15.Runner, One, Example, 62842880)
-  aocTest(Day15.Runner, One, Real, 21367368)
-  aocTest(Day15.Runner, Two, Example, 57600000)
-  aocTest(Day15.Runner, Two, Real, 1766400)
+  aocTest(Day15.Runner, One, Example, 62842880L)
+  aocTest(Day15.Runner, One, Real, 21367368L)
+  aocTest(Day15.Runner, Two, Example, 57600000L)
+  aocTest(Day15.Runner, Two, Real, 1766400L)
 
   aocTest(Day16.Runner, One, Real, 103)
   aocTest(Day16.Runner, Two, Real, 405)
