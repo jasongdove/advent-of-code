@@ -27,4 +27,13 @@ package object utils {
       .md5Hex(string)
       .toLowerCase()
   }
+
+  implicit class ListFrequency[A](list: List[A]) {
+    def frequency(): Map[A, Long] =
+      list
+        .groupBy(identity)
+        .view
+        .mapValues(_.size.toLong)
+        .toMap
+  }
 }

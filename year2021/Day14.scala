@@ -5,6 +5,7 @@ package adventofcode.year2021
 
 import cats.effect._
 import adventofcode._
+import adventofcode.utils._
 
 object Day14 extends IOApp {
 
@@ -45,10 +46,7 @@ object Day14 extends IOApp {
       val startPairs = input
         .sliding(2, 1)
         .toList
-        .groupBy(identity)
-        .view
-        .mapValues(_.size.toLong)
-        .toMap
+        .frequency
 
       val result = (1 to steps).foldLeft(startPairs)((acc, _) => step(acc, rules))
 
