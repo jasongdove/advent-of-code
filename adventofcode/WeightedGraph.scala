@@ -52,6 +52,40 @@ case class WeightedGraph[A](nodes: List[A], adj: Map[A, Set[Target[A]]]) {
     pathsToFinish(start)
   }
 
+  def distancesFrom(start: A): Map[A, Long] = {
+    val dist = scala.collection.mutable.Map.empty[A, Long]
+
+    object MinOrder extends Ordering[(A, Long)] {
+      def compare(x: (A, Long), y: (A, Long)): Int =
+        y._2 compare x._2
+    }
+
+    val q = scala.collection.mutable.PriorityQueue.empty(MinOrder)
+
+    nodes.foreach { location =>
+      if (location == start) {
+        dist.addOne(location -> 0)
+        q.enqueue(location -> 0)
+      } else dist.addOne(location -> Int.MaxValue)
+    }
+
+    while (q.size > 0) {
+      val current = q.dequeue()
+      for (n <- adj(current._1)) {
+        val newDist = dist(current._1) + n.weight
+        if (newDist < dist(n.value)) {
+          dist.update(n.value, newDist)
+          q.enqueue(n.value -> newDist)
+        }
+      }
+    }
+
+    dist.toMap
+  }
+
+  def shortestDistance(start: A, finish: A): Long =
+    distancesFrom(start)(finish)
+
   private def topoSort(start: A): List[A] = {
     val visited = scala.collection.mutable.Set[A]()
     val sorted = scala.collection.mutable.ListBuffer[A]()
@@ -141,5 +175,22 @@ object WeightedGraph {
     val adjList = build(Map.empty, edges)
     val nodes = adjList.keys ++ adjList.flatMap(_._2.map(_.value))
     WeightedGraph(nodes.toList, adjList)
+  }
+
+  def directedFrom(grid: Grid[Int]): WeightedGraph[GridLocation] = {
+    @annotation.tailrec
+    def buildEdges(q: Vector[GridValue[Int]], edges: Vector[Edge[GridLocation]]): List[Edge[GridLocation]] = {
+      q match {
+        case head +: tail =>
+          val toAdd = grid
+            .neighbors(head.location.row, head.location.col)
+            .map(gv => Edge(head.location, gv.location, gv.value))
+          buildEdges(tail, edges ++ toAdd)
+        case _ => edges.toList
+      }
+    }
+
+    val edges = buildEdges(grid.data.map(kv => GridValue(kv._1, kv._2)).toVector, Vector.empty)
+    WeightedGraph.directedFrom(edges)
   }
 }
