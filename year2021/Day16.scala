@@ -65,20 +65,20 @@ object Day16 extends IOApp {
             LiteralPacket(header, buf.parseBinaryToLong)
           case _ =>
             val lengthTypeId = read(1).parseBinaryToInt
-            lengthTypeId match {
+            val subPackets = lengthTypeId match {
               case 0 =>
                 val lengthInBits = read(15).parseBinaryToInt
                 val targetPos = pos + lengthInBits
-                var subPackets = scala.collection.mutable.ArrayBuffer.empty[Packet]
+                var packets = scala.collection.mutable.ArrayBuffer.empty[Packet]
                 while (pos < targetPos) {
-                  subPackets.addOne(readPacket())
+                  packets.addOne(readPacket())
                 }
-                OperatorPacket(header, subPackets.toList)
+                packets.toList
               case _ =>
                 val numSubPackets = read(11).parseBinaryToInt
-                val subPackets = (1 to numSubPackets).map(_ => readPacket()).toList
-                OperatorPacket(header, subPackets)
+                (1 to numSubPackets).map(_ => readPacket()).toList
             }
+            OperatorPacket(header, subPackets)
         }
       }
 
