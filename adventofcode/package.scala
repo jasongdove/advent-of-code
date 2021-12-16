@@ -22,6 +22,10 @@ package object utils {
     def parseBinaryToInt(): Int = Integer.parseInt(string, 2)
   }
 
+  implicit class BinaryStringToLong(string: String) {
+    def parseBinaryToLong(): Long = java.lang.Long.parseLong(string, 2)
+  }
+
   implicit class StringToMD5Hex(string: String) {
     def toMd5Hex: String = org.apache.commons.codec.digest.DigestUtils
       .md5Hex(string)
