@@ -78,6 +78,7 @@ object Day19 extends IOApp {
     def pointsInCommon(other: Scanner): PointsInCommon = {
       val relativeOtherOrientations = other.relativeOrientations
 
+      @annotation.tailrec
       def loop(q: Vector[RelativeScanner], best: PointsInCommon): PointsInCommon = {
         q match {
           case head +: tail =>
@@ -227,10 +228,6 @@ object Day19 extends IOApp {
 
         ctx.aggregate(result, offsets.toMap)
       }
-
-    private def processPartTwo(input: Input): Long = {
-      0L
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
