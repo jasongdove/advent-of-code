@@ -63,7 +63,7 @@ object Day25 extends IOApp {
       for {
         r <- 0 until map.rows
         c <- 0 until map.columns
-      } yield {
+      } {
         map(r, c) match {
           case '>' =>
             if (reference.get(r, (c + 1) % map.columns).getOrElse('!') == '.') {
@@ -81,7 +81,7 @@ object Day25 extends IOApp {
       for {
         r <- 0 until map.rows
         c <- 0 until map.columns
-      } yield {
+      } {
         map(r, c) match {
           case 'v' =>
             if (reference.get((r + 1) % map.rows, c).getOrElse('!') == '.') {

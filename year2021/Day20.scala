@@ -46,7 +46,7 @@ object Day20 extends IOApp {
         for {
           r <- 0 until input.image.rows
           c <- 0 until input.image.columns
-        } yield {
+        } {
           map.update(Point(c, r), input.image(r, c))
         }
 

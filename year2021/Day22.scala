@@ -65,21 +65,15 @@ object Day22 extends IOApp {
 
       val reversed = input.steps.reverse
 
-      var x = minX
-      while (x <= maxX) {
-        var y = minY
-        while (y <= maxY) {
-          var z = minZ
-          while (z <= maxZ) {
-            count += (reversed.find(_.cuboid.contains(x, y, z)) match {
-              case Some(RebootStep(true, _)) => 1
-              case _                         => 0
-            })
-            z += 1
-          }
-          y += 1
-        }
-        x += 1
+      for {
+        x <- minX to maxX
+        y <- minY to maxY
+        z <- minZ to maxZ
+      } {
+        count += (reversed.find(_.cuboid.contains(x, y, z)) match {
+          case Some(RebootStep(true, _)) => 1
+          case _                         => 0
+        })
       }
 
       count
