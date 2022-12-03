@@ -8,3 +8,4 @@ adventofcode/resources/
 .scala/
 resources/
 lib/
+.scala-build/
