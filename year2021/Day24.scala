@@ -1,6 +1,6 @@
-// using java-opt -Xms128m
-// using java-opt -Xmx4g
-// using lib it.unimi.dsi:fastutil:8.5.6
+//> using javaOpt "-Xms128m"
+//> using javaOpt "-Xmx4g"
+//> using lib "it.unimi.dsi:fastutil:8.5.6"
 
 package adventofcode.year2021
 
