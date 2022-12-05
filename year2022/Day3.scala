@@ -3,7 +3,7 @@ package adventofcode.year2022
 import adventofcode.Day
 import cats.effect._
 
-object Day1 extends IOApp {
+object Day3 extends IOApp {
 
   case class Rucksack(one: List[Char], two: List[Char]) {
     def combined: List[Char] = one ++ two

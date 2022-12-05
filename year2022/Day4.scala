@@ -3,7 +3,7 @@ package adventofcode.year2022
 import adventofcode.Day
 import cats.effect._
 
-object Day1 extends IOApp {
+object Day4 extends IOApp {
 
   case class AssignmentPair(one: Range, two: Range) {
     def fullyContains: Boolean = (two.contains(one.head) && two.contains(one.last)) || (one.contains(two.head) && one.contains(two.last))

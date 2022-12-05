@@ -3,7 +3,7 @@ package adventofcode.year2022
 import adventofcode.Day
 import cats.effect._
 
-object Day1 extends IOApp {
+object Day2 extends IOApp {
 
   case class Move(move: String) {
     def score(other: Move): Int =
