@@ -68,7 +68,7 @@ object Day7 extends IOApp {
       if (buf.length > 0) {
         commands.addOne(buf.toList)
       }
-      println(commands.toList)
+      // println(commands.toList)
 
       result.addOne(("/", 0))
       var currentDirectory = "";
@@ -97,7 +97,7 @@ object Day7 extends IOApp {
           }
         }
       }
-      println(result)
+      // println(result)
       Problem(result.toMap)
     }
 

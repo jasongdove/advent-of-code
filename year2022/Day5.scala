@@ -43,13 +43,13 @@ object Day5 extends IOApp {
       val instructions = problemLines.map(line => {
         val split1 = line.split(" from ")
         val quantity = split1(0).split(' ').last.toInt
-        println(quantity)
+        // println(quantity)
         val split2 = split1(1).split(" to ")
         val from = split2(0).toInt
         val to = split2(1).toInt
         Instruction(quantity, from, to)
       })
-      println(problemLines)
+      // println(problemLines)
 
       Problem(crateStacks.toList, instructions)
     }
@@ -70,15 +70,15 @@ object Day5 extends IOApp {
 
     override def partTwoContext(): Option[Context] =
       Some(Context(problem => {
-        println(problem)
+        // println(problem)
         val stacks = scala.collection.mutable.ArrayBuffer.from(problem.stacks)
         for (instruction <- problem.instructions) {
-          println(instruction)
+          // println(instruction)
           val from = stacks(instruction.from - 1)
           val to = stacks(instruction.to - 1)
           stacks.update(instruction.to - 1, to.add(from.stack.takeRight(instruction.quantity)))
           stacks.update(instruction.from - 1, from.remove(instruction.quantity))
-          println(stacks)
+          // println(stacks)
         }
         stacks.map(_.stack.last).mkString
       }))

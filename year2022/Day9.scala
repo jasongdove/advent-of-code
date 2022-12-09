@@ -1,6 +1,3 @@
-//> using javaOpt "-Xms64m"
-//> using javaOpt "-Xmx1g"
-
 package adventofcode.year2022
 
 import adventofcode.{Day, Grid, GridLocation}
@@ -55,37 +52,48 @@ object Day9 extends IOApp {
     }
   }
 
+  case object Rope {
+    def ofLength(length: Int): List[LongLoc] = 0.to(length - 1).map(_ => LongLoc(0, 0)).toList
+  }
+
   case class Problem(moves: List[Move]) {
-    def solve(): Int = {
-      def loop(q: List[Move], hl: LongLoc, tl: LongLoc, visited: Set[LongLoc]): Int = {
+    def solve(initialRope: List[LongLoc]): Int = {
+      def moveAll(rope: List[LongLoc], move: Move): List[LongLoc] = {
+        var buf = scala.collection.mutable.ArrayBuffer.empty[LongLoc]
+        buf.addOne(rope.head.moveHead(move))
+        for (t <- rope.tail) {
+          buf.addOne(t.moveTail(buf.last))
+        }
+        buf.toList
+      }
+
+      def loop(q: List[Move], rope: List[LongLoc], visited: Set[LongLoc]): Int = {
         q match {
           case move :: tail => {
-            val nextHeadLoc = hl.moveHead(move)
-            val nextTailLoc = tl.moveTail(nextHeadLoc)
-            loop(tail, nextHeadLoc, nextTailLoc, visited + nextTailLoc)
+            val nextLocs = moveAll(rope, move)
+            loop(tail, nextLocs, visited + nextLocs.last)
           }
           case Nil => visited.size
         }
       }
-      loop(moves, LongLoc(0, 0), LongLoc(0, 0), Set(LongLoc(0, 0)))
+      loop(moves, initialRope, Set(LongLoc(0, 0)))
     }
   }
 
-  case class Context(solve: Problem => Int)
+  case class Context(ropeLength: Int)
 
   object Runner extends Day[Problem, Context, Int](2022, 9) {
     override def transformInput(lines: List[String]): Problem =
       Problem(lines.flatMap(Move.from))
 
     override def partOneContext(): Option[Context] =
-      Some(Context(l => l.solve()))
+      Some(Context(2))
 
     override def partTwoContext(): Option[Context] =
-      Some(Context(l => l.solve()))
+      Some(Context(10))
 
-    override def process(input: Problem, context: Option[Context]): Option[Int] = {
-      context.map(_.solve(input))
-    }
+    override def process(input: Problem, context: Option[Context]): Option[Int] =
+      context.map(ctx => input.solve(Rope.ofLength(ctx.ropeLength)))
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
