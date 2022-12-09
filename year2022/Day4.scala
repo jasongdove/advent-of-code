@@ -29,9 +29,8 @@ object Day4 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(_.count(_.intersects)))
 
-    override def process(input: List[AssignmentPair], context: Option[Context]): Option[Int] = {
+    override def process(input: List[AssignmentPair], context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

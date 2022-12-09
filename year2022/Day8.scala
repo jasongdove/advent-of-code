@@ -39,7 +39,6 @@ object Day8 extends IOApp {
       val rightTrees = right.indexWhere(_ >= height)
       val rightScore = if (rightTrees < 0) right.length else rightTrees + 1
 
-      // println(s"up: ${upScore}, down: ${downScore}, left: ${leftScore}, right: ${rightScore}")
       upScore * downScore * leftScore * rightScore
     }
   }
@@ -57,23 +56,17 @@ object Day8 extends IOApp {
           grid = grid.updated(GridLocation(row, col), r(col).toString.toInt)
         }
       }
-      // println(grid)
       Problem(grid)
     }
 
     override def partOneContext(): Option[Context] =
-      Some(Context(l => {
-        l.grid.allLocations().count(loc => l.isVisible(loc.row, loc.col))
-      }))
+      Some(Context(l => l.grid.allLocations().count(loc => l.isVisible(loc.row, loc.col))))
 
     override def partTwoContext(): Option[Context] =
-      Some(Context(l => {
-        l.grid.allLocations().map(loc => l.scenicScore(loc.row, loc.col)).max
-      }))
+      Some(Context(l => l.grid.allLocations().map(loc => l.scenicScore(loc.row, loc.col)).max))
 
-    override def process(input: Problem, context: Option[Context]): Option[Int] = {
+    override def process(input: Problem, context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

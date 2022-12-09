@@ -31,9 +31,8 @@ object Day3 extends IOApp {
     override def partTwoContext(): Option[Context] =
       Some(Context(_.sliding(3, 3).map(g => g.head.priority(g.head.combined.find(c => g(1).combined.contains(c) && g(2).combined.contains(c)).get)).sum))
 
-    override def process(input: List[Rucksack], context: Option[Context]): Option[Int] = {
+    override def process(input: List[Rucksack], context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

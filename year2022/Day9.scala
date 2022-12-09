@@ -24,18 +24,7 @@ object Day9 extends IOApp {
     }
 
     def moveTail(head: LongLoc): LongLoc = {
-      val doNotMove = List(
-        LongLoc(row - 1, col - 1),
-        LongLoc(row - 1, col),
-        LongLoc(row - 1, col + 1),
-        LongLoc(row, col - 1),
-        LongLoc(row, col),
-        LongLoc(row, col + 1),
-        LongLoc(row + 1, col + 1),
-        LongLoc(row + 1, col),
-        LongLoc(row + 1, col - 1),
-      )
-      if (doNotMove.contains(head)) this
+      if (math.abs(row - head.row) <= 1 && math.abs(col - head.col) <= 1) this
       else {
         if (head.row == row) {
           if (head.col > col) LongLoc(row, col + 1)

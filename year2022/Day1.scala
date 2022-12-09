@@ -32,13 +32,11 @@ object Day1 extends IOApp {
     override def partOneContext(): Option[Context] =
       Some(Context(_.map(_.food.sum).max))
 
-    override def partTwoContext(): Option[Context] = {
+    override def partTwoContext(): Option[Context] =
       Some(Context(_.map(_.food.sum).sorted.reverse.take(3).sum))
-    }
 
-    override def process(input: List[Elf], context: Option[Context]): Option[Int] = {
+    override def process(input: List[Elf], context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

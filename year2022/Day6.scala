@@ -5,18 +5,6 @@ import cats.effect._
 
 object Day6 extends IOApp {
 
-  case class Problem(stacks: List[CrateStack], instructions: List[Instruction])
-
-  case class Instruction(quantity: Int, from: Int, to: Int)
-
-  case class CrateStack(num: Int, stack: List[Char]) {
-    def add(c: Char): CrateStack = CrateStack(num, stack :+ c)
-    def remove(): CrateStack = CrateStack(num, stack.take(stack.size - 1))
-    
-    def add(c: List[Char]): CrateStack = CrateStack(num, stack ++ c)
-    def remove(qty: Int): CrateStack = CrateStack(num, stack.take(stack.size - qty))
-  }
-
   case class Context(solve: String => Int)
 
   object Runner extends Day[String, Context, Int](2022, 6) {
@@ -34,9 +22,8 @@ object Day6 extends IOApp {
         l.indexOf(marker) + 14
       }))
 
-    override def process(input: String, context: Option[Context]): Option[Int] = {
+    override def process(input: String, context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

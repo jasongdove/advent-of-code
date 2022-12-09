@@ -47,13 +47,11 @@ object Day2 extends IOApp {
     override def partOneContext(): Option[Context] =
       Some(Context(_.map(r => r.player.score(r.opponent)).sum))
 
-    override def partTwoContext(): Option[Context] = {
+    override def partTwoContext(): Option[Context] =
       Some(Context(_.map(r => r.player.score2(r.opponent)).sum))
-    }
 
-    override def process(input: List[Round], context: Option[Context]): Option[Int] = {
+    override def process(input: List[Round], context: Option[Context]): Option[Int] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)

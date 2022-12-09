@@ -12,7 +12,7 @@ object Day5 extends IOApp {
   case class CrateStack(num: Int, stack: List[Char]) {
     def add(c: Char): CrateStack = CrateStack(num, stack :+ c)
     def remove(): CrateStack = CrateStack(num, stack.take(stack.size - 1))
-    
+
     def add(c: List[Char]): CrateStack = CrateStack(num, stack ++ c)
     def remove(qty: Int): CrateStack = CrateStack(num, stack.take(stack.size - qty))
   }
@@ -30,10 +30,8 @@ object Day5 extends IOApp {
       }
       for (i <- 1 to ((maxNum - 1) * 4 + 1) by 4) {
         val num = crateLines.head(i).toString.toInt
-        // println(num)
         for (line <- crateLines.tail) {
           if (line.length() > i && line(i) != ' ') {
-            // println(s"updating ${num - 1} with position ${i}")
             crateStacks.update(num - 1, crateStacks(num - 1).add(line(i)))
           }
         }
@@ -43,13 +41,11 @@ object Day5 extends IOApp {
       val instructions = problemLines.map(line => {
         val split1 = line.split(" from ")
         val quantity = split1(0).split(' ').last.toInt
-        // println(quantity)
         val split2 = split1(1).split(" to ")
         val from = split2(0).toInt
         val to = split2(1).toInt
         Instruction(quantity, from, to)
       })
-      // println(problemLines)
 
       Problem(crateStacks.toList, instructions)
     }
@@ -70,22 +66,18 @@ object Day5 extends IOApp {
 
     override def partTwoContext(): Option[Context] =
       Some(Context(problem => {
-        // println(problem)
         val stacks = scala.collection.mutable.ArrayBuffer.from(problem.stacks)
         for (instruction <- problem.instructions) {
-          // println(instruction)
           val from = stacks(instruction.from - 1)
           val to = stacks(instruction.to - 1)
           stacks.update(instruction.to - 1, to.add(from.stack.takeRight(instruction.quantity)))
           stacks.update(instruction.from - 1, from.remove(instruction.quantity))
-          // println(stacks)
         }
         stacks.map(_.stack.last).mkString
       }))
 
-    override def process(input: Problem, context: Option[Context]): Option[String] = {
+    override def process(input: Problem, context: Option[Context]): Option[String] =
       context.map(_.solve(input))
-    }
   }
 
   override def run(args: List[String]): IO[ExitCode] = Runner.run(args)
