@@ -1,5 +1,5 @@
-// using java-opt -Xms64m
-// using java-opt -Xmx2g
+//> using javaOpt "-Xms64m"
+//> using javaOpt "-Xmx2g"
 
 package adventofcode.year2021
 

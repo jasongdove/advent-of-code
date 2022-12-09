@@ -1,4 +1,4 @@
-// using lib com.disneystreaming::weaver-cats:0.7.7
+//> using lib "com.disneystreaming::weaver-cats:0.7.7"
 
 package adventofcode
 
