@@ -2,7 +2,6 @@ package adventofcode.year2022
 
 import adventofcode.{Day, Grid, GridLocation}
 import cats.effect._
-import scala.collection.mutable.ArrayBuffer
 
 object Day8 extends IOApp {
 

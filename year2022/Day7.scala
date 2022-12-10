@@ -2,7 +2,6 @@ package adventofcode.year2022
 
 import adventofcode.Day
 import cats.effect._
-import scala.collection.mutable.ArrayBuffer
 
 object Day7 extends IOApp {
 
@@ -52,8 +51,8 @@ object Day7 extends IOApp {
   object Runner extends Day[Problem, Context, Long](2022, 7) {
     override def transformInput(lines: List[String]): Problem = {
       val result = scala.collection.mutable.Map.empty[String, Long]
-      var commands = ArrayBuffer.empty[List[String]]
-      var buf = ArrayBuffer.empty[String]
+      var commands = scala.collection.mutable.ArrayBuffer.empty[List[String]]
+      var buf = scala.collection.mutable.ArrayBuffer.empty[String]
       for (line <- lines) {
         if (line.startsWith("$")) {
           if (buf.length > 0) {

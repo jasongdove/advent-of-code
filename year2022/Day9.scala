@@ -2,7 +2,6 @@ package adventofcode.year2022
 
 import adventofcode.{Day, Grid, GridLocation}
 import cats.effect._
-import scala.collection.mutable.ArrayBuffer
 
 object Day9 extends IOApp {
 
@@ -56,6 +55,7 @@ object Day9 extends IOApp {
         buf.toList
       }
 
+      @annotation.tailrec
       def loop(q: List[Move], rope: List[LongLoc], visited: Set[LongLoc]): Int = {
         q match {
           case move :: tail => {
