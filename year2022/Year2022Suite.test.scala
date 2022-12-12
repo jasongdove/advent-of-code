@@ -60,4 +60,9 @@ object Year2022Suite extends BaseSuite {
   aocTest(Day11.Runner, One, Real, 56595L)
   aocTest(Day11.Runner, Two, Example, 2713310158L)
   aocTest(Day11.Runner, Two, Real, 15693274740L)
+
+  aocTest(Day12.Runner, One, Example, 31)
+  aocTest(Day12.Runner, One, Real, 361)
+  aocTest(Day12.Runner, Two, Example, 29)
+  aocTest(Day12.Runner, Two, Real, 354)
 }
