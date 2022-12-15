@@ -1,5 +1,3 @@
-//> using lib "com.disneystreaming::weaver-cats:0.7.7"
-
 package adventofcode
 
 import adventofcode.year2022._
@@ -75,4 +73,9 @@ object Year2022Suite extends BaseSuite {
   aocTest(Day14.Runner, One, Real, 843)
   aocTest(Day14.Runner, Two, Example, 93)
   aocTest(Day14.Runner, Two, Real, 27625)
+
+  aocTest(Day15.Runner, One, Example, 26L)
+  aocTest(Day15.Runner, One, Real, 5127797L)
+  aocTest(Day15.Runner, Two, Example, 56000011L)
+  aocTest(Day15.Runner, Two, Real, 12518502636475L)
 }

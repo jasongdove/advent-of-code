@@ -1,6 +1,3 @@
-//> using javaOpt "-Xms64m"
-//> using javaOpt "-Xmx1g"
-
 package adventofcode.year2022
 
 import adventofcode.Day
