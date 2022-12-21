@@ -5,5 +5,5 @@
 //> using lib "com.disneystreaming::weaver-cats:0.8.1"
 //> using jar "lib/adventofcode.jar"
 //> using resourceDir "resources"
-//> using javaOpt "-Xms64m"
-//> using javaOpt "-Xmx1g"
+//> using javaOpt "-Xms256m"
+//> using javaOpt "-Xmx4g"
