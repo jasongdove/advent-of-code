@@ -52,15 +52,15 @@ object Day21 extends IOApp {
 
   case class State(
     waitingMonkeys: scala.collection.mutable.Set[Monkey],
-    completedMonkeys: scala.collection.mutable.HashMap[String, Double]
+    completedMonkeys: scala.collection.mutable.HashMap[String, Long]
   )
 
   def solve(monkeys: List[Monkey]): State =
-    solve(scala.collection.mutable.Set.from(monkeys), scala.collection.mutable.HashMap.empty[String, Double])
+    solve(scala.collection.mutable.Set.from(monkeys), scala.collection.mutable.HashMap.empty[String, Long])
 
   def solve(
     waitingMonkeys: scala.collection.mutable.Set[Monkey],
-    completedMonkeys: scala.collection.mutable.HashMap[String, Double]
+    completedMonkeys: scala.collection.mutable.HashMap[String, Long]
   ): State = {
     val toRemove = scala.collection.mutable.ArrayBuffer.empty[Monkey]
     do {
@@ -93,7 +93,7 @@ object Day21 extends IOApp {
     State(waitingMonkeys, completedMonkeys)
   }
 
-  def solveTwo(monkeys: List[Monkey]): Double = {
+  def solveTwo(monkeys: List[Monkey]): Long = {
     val rootJob = monkeys.find(_.name == "root").get.job.asInstanceOf[WaitToYell]
     val reduced = solve(monkeys.filterNot(m => m.name == "humn" || m.name == "root"))
 
@@ -136,12 +136,12 @@ object Day21 extends IOApp {
 
     override def partOneContext(): Option[Context] =
       Some(Context(input => {
-        solve(input.monkeys).completedMonkeys("root").toLong
+        solve(input.monkeys).completedMonkeys("root")
       }))
 
     override def partTwoContext(): Option[Context] =
       Some(Context(input => {
-        solveTwo(input.monkeys).toLong
+        solveTwo(input.monkeys)
       }))
 
     override def process(input: Input, context: Option[Context]): Option[Long] =
