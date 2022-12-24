@@ -129,10 +129,6 @@ object Day24 extends IOApp {
   def solve(valley: Valley, roundOffset: Int): Int = {
     case class ValleyState(expedition: ValleyLocation, rounds: Int)
 
-    var state = ValleyState(valley.entrance, roundOffset)
-
-    var roundNumber = 1
-
     def minDist(location: ValleyLocation): Int =
       math.abs(location.row - valley.exit.row) + math.abs(location.col - valley.exit.col)
 
@@ -141,7 +137,7 @@ object Day24 extends IOApp {
     val queue = scala.collection.mutable.PriorityQueue.empty[ValleyState](Ordering.by(priorityOrder))
     var best: Int = Int.MaxValue
 
-    queue.addOne(state)
+    queue.addOne(ValleyState(valley.entrance, roundOffset))
 
     while (!queue.isEmpty) {
       val state = queue.dequeue()
