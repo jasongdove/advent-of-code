@@ -132,7 +132,7 @@ object Day24 extends IOApp {
     def minDist(location: ValleyLocation): Int =
       math.abs(location.row - valley.exit.row) + math.abs(location.col - valley.exit.col)
 
-    def priorityOrder(s: ValleyState): Int = -minDist(s.expedition)
+    def priorityOrder(s: ValleyState): Int = -minDist(s.expedition) * s.rounds
     val visited = scala.collection.mutable.Set.empty[ValleyState]
     val queue = scala.collection.mutable.PriorityQueue.empty[ValleyState](Ordering.by(priorityOrder))
     var best: Int = Int.MaxValue
