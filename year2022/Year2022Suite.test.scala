@@ -123,4 +123,7 @@ object Year2022Suite extends BaseSuite {
   aocTest(Day24.Runner, One, Real, 314)
   aocTest(Day24.Runner, Two, Example, 54)
   aocTest(Day24.Runner, Two, Real, 896)
+
+  aocTest(Day25.Runner, One, Example, "2=-1=0")
+  aocTest(Day25.Runner, One, Real, "2=20---01==222=0=0-2")
 }
