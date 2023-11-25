@@ -13,7 +13,7 @@ class Day01(Day):
                 floor += 1
             else:
                 floor -= 1
-        print(floor)
+        return floor
 
     def part02(self):
         text = super()._part01_input()
@@ -26,5 +26,5 @@ class Day01(Day):
             else:
                 floor -= 1
             if floor < 0:
-                break
-        print(index)
+                return index
+        return -1
