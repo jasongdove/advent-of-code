@@ -2,7 +2,7 @@ from adventofcode import Day
 from functools import reduce
 
 
-class Present():
+class Present:
     def __init__(self, length, width, height):
         self.length = length
         self.width = width
