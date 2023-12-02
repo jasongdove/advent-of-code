@@ -8,6 +8,11 @@ class Day:
             data = f.read()
         return data
 
+    def _part02_input(self):
+        with open(f'resources/{self.year}/day{self.day:02}-part2.txt') as f:
+            data = f.read()
+        return data
+
     def part01(self):
         raise NotImplementedError()
 
