@@ -9,7 +9,7 @@ class TestDay01(unittest.TestCase):
 
     def test_part01(self):
         p1 = self.day.part01()
-        self.assertEqual(p1, 0)
+        self.assertEqual(p1, 550064)
 
     def test_part02(self):
         p2 = self.day.part02()
