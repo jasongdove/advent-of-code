@@ -1,4 +1,4 @@
-from adventofcode import Day
+from adventofcode import Day, Coordinate
 import re
 
 
@@ -6,24 +6,15 @@ class PartNumber:
 
     def __init__(self, value, row_number, span):
         self.value = value
-        self.coordinates = set(map(lambda x: (x, row_number), range(span[0], span[1])))
+        self.coordinates = set(map(lambda col: Coordinate(row_number, col), range(span[0], span[1])))
 
     def to_check(self, data):
-        min_y = 0
-        max_y = len(data)
-        min_x = 0
-        max_x = len(data[0])
+        max_row = len(data)
+        max_col = len(data[0])
         result = set()
-        for coord in self.coordinates:
-            result.add((coord[0] - 1, coord[1] - 1))
-            result.add((coord[0], coord[1] - 1))
-            result.add((coord[0] + 1, coord[1] - 1))
-            result.add((coord[0] - 1, coord[1]))
-            result.add((coord[0] + 1, coord[1]))
-            result.add((coord[0] - 1, coord[1] + 1))
-            result.add((coord[0], coord[1] - 1))
-            result.add((coord[0] + 1, coord[1] + 1))
-        result = set(filter(lambda c: min_x <= c[0] < max_x and min_y <= c[1] < max_y, result))
+        for coord_set in map(lambda c: c.adj_diagonal(), self.coordinates):
+            result.update(coord_set)
+        result = set(filter(lambda c: 0 <= c.col < max_col and 0 <= c.row < max_row, result))
         return result.difference(self.coordinates)
 
     def __str__(self):
@@ -40,14 +31,12 @@ class Day03(Day):
         numbers = []
         data = [line for line in text.splitlines()]
         for row_number in range(0, len(data)):
-            row = data[row_number]
-            for num in self.reg.finditer(row):
-                number = PartNumber(int(num.group(0)), row_number, num.span())
-                numbers.append(number)
+            for num in self.reg.finditer(data[row_number]):
+                numbers.append(PartNumber(int(num.group(0)), row_number, num.span()))
         total = 0
         for num in numbers:
             for check in num.to_check(data):
-                if data[check[1]][check[0]] != '.':
+                if data[check.row][check.col] != '.':
                     total += num.value
         return total
 
