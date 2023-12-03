@@ -72,7 +72,8 @@ class Day03(Day):
         gears = self.gears_from_data(data)
         total = 0
         for gear in gears:
-            adj = list(n for n in numbers if len(n.coordinates.intersection(gear.to_check(data))) > 0)
+            gear_adj = gear.to_check(data)
+            adj = list(n for n in numbers if len(n.coordinates.intersection(gear_adj)) > 0)
             if len(adj) == 2:
                 total += adj[0].value * adj[1].value
         return total
