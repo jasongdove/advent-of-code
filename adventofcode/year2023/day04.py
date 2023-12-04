@@ -35,7 +35,7 @@ class Day04(Day):
         card_counts = [1] * len(cards)
         for i in range(0, len(cards)):
             count = cards[i].matching()
-            for j in range(0, card_counts[i]):
-                for k in range(i + 1, i + 1 + count):
-                    card_counts[k] += 1
+            to_add = card_counts[i]
+            for k in range(i + 1, i + 1 + count):
+                card_counts[k] += to_add
         return sum(card_counts)
