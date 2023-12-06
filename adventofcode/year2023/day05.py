@@ -2,10 +2,12 @@ from adventofcode import Day
 import re
 import math
 
+
 class Day05(Day):
     def __init__(self):
         super().__init__(2023, 5)
         self.reg = re.compile("(\\d+)")
+        self.cached_maps = {}
 
     def process(self, lines, value):
         next_value = value
@@ -17,7 +19,10 @@ class Day05(Day):
                 value = next_value
                 continue
             elif value is not None:
-                range_map = list(map(int, line.split(' ')))
+                range_map = self.cached_maps.get(i)
+                if range_map is None:
+                    range_map = list(map(int, self.reg.findall(line)))
+                    self.cached_maps[i] = range_map
                 if range_map[1] <= value < (range_map[1] + range_map[2]):
                     next_value = value - range_map[1] + range_map[0]
                     value = None
@@ -59,7 +64,7 @@ class Day05(Day):
             lo = result[r]
             hi = lo + result[r + 1] - 1
             # check a handful of seeds using large steps, to find the best seed range
-            step = max(1, int(math.ceil(hi - lo) / 10_000.0))
+            step = max(1, int(math.ceil(hi - lo) / 3500.0))
             for t in range(lo, hi + 1, step):
                 res = self.process(lines, t)
                 if res < min_result:
