@@ -118,3 +118,5 @@ fabric.properties
 
 # advent of code resource files
 resources/
+
+__pycache__/
