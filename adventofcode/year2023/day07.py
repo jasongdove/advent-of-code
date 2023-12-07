@@ -79,14 +79,9 @@ class Hand:
         return self.get_card_ranks() < obj.get_card_ranks()
 
 
-class Hand2:
+class Hand2(Hand):
     def __init__(self, line):
-        s = line.split(' ')
-        self.cards = [c for c in s[0]]
-        self.bid = int(s[1])
-
-    def __str__(self):
-        return f'{self.cards} => {self.bid} => {self.get_type()} => {self.get_card_ranks()}'
+        super().__init__(line)
 
     def get_type(self):
         c = Counter(self.cards)
@@ -139,24 +134,6 @@ class Hand2:
                 res.append('N')
         return "".join(res)
 
-    def __eq__(self, obj):
-        if self.get_type() != obj.get_type():
-            return False
-        return self.get_card_ranks() == obj.get_card_ranks()
-
-    def __lt__(self, obj):
-        if self.get_type() < obj.get_type():
-            return True
-        if self.get_type() > obj.get_type():
-            return False
-        return self.get_card_ranks() > obj.get_card_ranks()
-
-    def __le__(self, obj):
-        if self.get_type() > obj.get_type():
-            return True
-        if self.get_type() < obj.get_type():
-            return False
-        return self.get_card_ranks() < obj.get_card_ranks()
 
 class Day07(Day):
     def __init__(self):
