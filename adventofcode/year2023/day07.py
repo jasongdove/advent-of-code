@@ -139,9 +139,9 @@ class Day07(Day):
     def __init__(self):
         super().__init__(2023, 7)
 
-    def part01(self):
-        text = super()._part01_input()
-        hands = list(map(Hand, text.splitlines()))
+    @staticmethod
+    def solve(hand_type, text):
+        hands = list(map(hand_type, text.splitlines()))
         res = sorted(hands)
         winnings = 0
         for i in range(len(res)):
@@ -149,12 +149,10 @@ class Day07(Day):
             winnings += (i + 1) * hand.bid
         return winnings
 
+    def part01(self):
+        text = super()._part01_input()
+        return Day07.solve(Hand, text)
+
     def part02(self):
         text = super()._part02_input()
-        hands = list(map(Hand2, text.splitlines()))
-        res = sorted(hands)
-        winnings = 0
-        for i in range(len(res)):
-            hand = res[i]
-            winnings += (i + 1) * hand.bid
-        return winnings
+        return Day07.solve(Hand2, text)
