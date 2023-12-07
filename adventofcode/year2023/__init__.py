@@ -4,3 +4,4 @@ from .day03 import Day03
 from .day04 import Day04
 from .day05 import Day05
 from .day06 import Day06
+from .day07 import Day07
