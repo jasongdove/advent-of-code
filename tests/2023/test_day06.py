@@ -2,7 +2,7 @@ import unittest
 from adventofcode.year2023 import Day06
 
 
-class TestDay01(unittest.TestCase):
+class TestDay06(unittest.TestCase):
 
     def setUp(self):
         self.day = Day06()
