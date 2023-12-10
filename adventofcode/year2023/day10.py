@@ -7,7 +7,7 @@ class Day10(Day):
         super().__init__(2023, 10)
 
     @staticmethod
-    def follow(the_map, coordinate):
+    def follow(the_map: list[list[chr]], coordinate: Coordinate):
         symbol = the_map[coordinate.row][coordinate.col]
         match symbol:
             case '|':
@@ -25,7 +25,7 @@ class Day10(Day):
         return []
 
     @staticmethod
-    def get_connected(the_map, coord):
+    def get_connected(the_map: list[list[chr]], coord: Coordinate):
         result = []
         up = coord.up()
         if up.is_valid_in(the_map) and the_map[up.row][up.col] in ['|', '7', 'F']:
@@ -42,7 +42,11 @@ class Day10(Day):
         return result
 
     @staticmethod
-    def bfs(the_map, start):
+    def bfs(the_map: list[list[chr]]):
+        start = Coordinate(0, 0)
+        for index, row in enumerate(the_map):
+            if 'S' in row:
+                start = Coordinate(index, row.index('S'))
         visited = {}
         q = queue.Queue()
         for y in Day10.get_connected(the_map, start):
@@ -60,13 +64,47 @@ class Day10(Day):
     def part01(self):
         text = super()._part01_input()
         the_map = [list(line) for line in text.splitlines()]
+        visited = Day10.bfs(the_map)
+        return max(visited.values())
+
+    def part02(self):
+        text = super()._part02_input()
+        the_map = [list(line) for line in text.splitlines()]
+        visited = Day10.bfs(the_map)
+
+        # replace start char with implied pipe
         start = Coordinate(0, 0)
         for index, row in enumerate(the_map):
             if 'S' in row:
                 start = Coordinate(index, row.index('S'))
-        visited = Day10.bfs(the_map, start)
-        return max(visited.values())
+        connected_to_start = Day10.get_connected(the_map, start)
 
-    def part02(self):
-        text = super()._part01_input()
-        return 0
+        replace = 'S'
+        if start.up() in connected_to_start and start.left() in connected_to_start:
+            replace = 'J'
+        elif start.up() in connected_to_start and start.right() in connected_to_start:
+            replace = 'L'
+        elif start.up() in connected_to_start and start.down() in connected_to_start:
+            replace = '|'
+        elif start.down() in connected_to_start and start.left() in connected_to_start:
+            replace = '7'
+        elif start.down() in connected_to_start and start.right() in connected_to_start:
+            replace = 'F'
+        elif start.left() in connected_to_start and start.right() in connected_to_start:
+            replace = '-'
+
+        the_map[start.row][start.col] = replace
+
+        # count to the right, only including bottom and side edges
+        enclosed = []
+        for row_index, row in enumerate(the_map):
+            for col_index in range(0, len(row)):
+                if Coordinate(row_index, col_index) not in visited:
+                    right_count = 0
+                    for i in range(col_index + 1, len(row)):
+                        if Coordinate(row_index, i) in visited and the_map[row_index][i] in ['|', 'J', 'L']:
+                            right_count += 1
+                    if right_count % 2 == 1:
+                        enclosed.append(Coordinate(row_index, col_index))
+
+        return len(enclosed)
