@@ -15,6 +15,21 @@ class Coordinate:
             Coordinate(self.row + 1, self.col + 1)
         }
 
+    def left(self):
+        return Coordinate(self.row, self.col - 1)
+
+    def right(self):
+        return Coordinate(self.row, self.col + 1)
+
+    def up(self):
+        return Coordinate(self.row - 1, self.col)
+
+    def down(self):
+        return Coordinate(self.row + 1, self.col)
+
+    def is_valid_in(self, the_map):
+        return 0 <= self.row < len(the_map) and 0 <= self.col < len(the_map[0])
+
     def __eq__(self, other):
         return other and self.row == other.row and self.col == other.col
 
