@@ -7,33 +7,20 @@ class Day11(Day):
         super().__init__(2023, 11)
 
     @staticmethod
-    def expand(the_map):
-        # double empty rows
-        clone = the_map[:]
-        the_map.clear()
-        for row in clone:
+    def get_expansion_rows(the_map: list[list[chr]]) -> list[int]:
+        result = []
+        for row_index, row in enumerate(the_map):
             if all(x == '.' for x in row):
-                the_map.append(row)
-            the_map.append(row)
+                result.append(row_index)
+        return result
 
-        # double empty cols
-        clone = the_map[:]
-        the_map.clear()
-        row_count = len(clone)
-        to_expand = []
-        for i in range(len(clone[0])):
-            if all(clone[x][i] == '.' for x in range(row_count)):
-                to_expand.append(i)
-
-        for row in clone:
-            next_row = []
-            for i, c in enumerate(row):
-                if i in to_expand:
-                    next_row.append(c)
-                next_row.append(c)
-            the_map.append(next_row)
-
-        return the_map
+    @staticmethod
+    def get_expansion_cols(the_map: list[list[chr]]) -> list[int]:
+        result = []
+        for i in range(len(the_map[0])):
+            if all(the_map[x][i] == '.' for x in range(len(the_map))):
+                result.append(i)
+        return result
 
     @staticmethod
     def find_all_galaxies(the_map):
@@ -53,22 +40,35 @@ class Day11(Day):
                 result = min(distance, result)
         return result
 
+    @staticmethod
+    def solve(the_map: list[list[chr]], expansion_ratio: int) -> int:
+        expansion_rows = Day11.get_expansion_rows(the_map)
+        expansion_cols = Day11.get_expansion_cols(the_map)
+
+        galaxies = Day11.find_all_galaxies(the_map)
+        pairs = combinations(galaxies, 2)
+        distance = 0
+        for pair in pairs:
+            min_row = min(pair[0].row, pair[1].row)
+            max_row = max(pair[0].row, pair[1].row)
+            min_col = min(pair[0].col, pair[1].col)
+            max_col = max(pair[0].col, pair[1].col)
+
+            extra_rows = sum([1 if min_row < r < max_row else 0 for r in expansion_rows])
+            extra_cols = sum([1 if min_col < c < max_col else 0 for c in expansion_cols])
+
+            max_row += extra_rows * (expansion_ratio - 1)
+            max_col += extra_cols * (expansion_ratio - 1)
+
+            distance += (max_row - min_row) + (max_col - min_col)
+        return distance
+
     def part01(self):
         text = super()._part01_input()
         the_map = [list(line) for line in text.splitlines()]
-        the_map = Day11.expand(the_map)
-
-        #for row in the_map:
-        #    print("".join(row))
-
-        galaxies = Day11.find_all_galaxies(the_map)
-        pairs = set(combinations(galaxies, 2))
-        distance = 0
-        for pair in pairs:
-            #print(f'p0: {pair[0]}, p1: {pair[1]}')
-            distance += abs(pair[0].row - pair[1].row) + abs(pair[0].col - pair[1].col)
-        return distance
+        return Day11.solve(the_map, 2)
 
     def part02(self):
         text = super()._part01_input()
-        return 0
+        the_map = [list(line) for line in text.splitlines()]
+        return Day11.solve(the_map, 1_000_000)
