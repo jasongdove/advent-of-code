@@ -1,5 +1,5 @@
 from adventofcode import Day, Coordinate
-import queue
+from itertools import combinations
 
 
 class Day11(Day):
@@ -35,14 +35,39 @@ class Day11(Day):
 
         return the_map
 
+    @staticmethod
+    def find_all_galaxies(the_map):
+        galaxies = []
+        for row_index, row in enumerate(the_map):
+            for col_index, col in enumerate(row):
+                if col == '#':
+                    galaxies.append(Coordinate(row_index, col_index))
+        return galaxies
+
+    @staticmethod
+    def min_distance(galaxy: Coordinate, galaxies: list[Coordinate]) -> int:
+        result = 100000000
+        for other in galaxies:
+            if galaxy != other:
+                distance = abs(galaxy.row - other.row) + abs(galaxy.col - other.col)
+                result = min(distance, result)
+        return result
+
     def part01(self):
         text = super()._part01_input()
         the_map = [list(line) for line in text.splitlines()]
         the_map = Day11.expand(the_map)
 
-        for row in the_map:
-            print("".join(row))
-        return 0
+        #for row in the_map:
+        #    print("".join(row))
+
+        galaxies = Day11.find_all_galaxies(the_map)
+        pairs = set(combinations(galaxies, 2))
+        distance = 0
+        for pair in pairs:
+            #print(f'p0: {pair[0]}, p1: {pair[1]}')
+            distance += abs(pair[0].row - pair[1].row) + abs(pair[0].col - pair[1].col)
+        return distance
 
     def part02(self):
         text = super()._part01_input()
