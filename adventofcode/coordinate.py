@@ -43,4 +43,4 @@ class Coordinate:
         return hash((self.row, self.col))
 
     def __str__(self):
-        return f'({self.col}, {self.row})'
+        return f'({self.row}, {self.col})'
