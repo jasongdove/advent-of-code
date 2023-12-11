@@ -23,7 +23,7 @@ class Day11(Day):
         return result
 
     @staticmethod
-    def find_all_galaxies(the_map):
+    def find_all_galaxies(the_map: list[list[chr]]) -> list[Coordinate]:
         galaxies = []
         for row_index, row in enumerate(the_map):
             for col_index, col in enumerate(row):
