@@ -5,10 +5,8 @@ from functools import cache
 class Day12(Day):
     def __init__(self):
         super().__init__(2023, 12)
-        self.memo = dict()
 
     def solve_line(self, line: str, unfold: int) -> int:
-        self.memo.clear()
         s = line.split()
         r = s[0]
         c = list(map(int, s[1].split(',')))
