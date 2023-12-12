@@ -22,27 +22,24 @@ class Day12(Day):
 
     @cache
     def solve(self, records: tuple[chr], contig: tuple[int]) -> int:
-        result = 0
         r = list(records)
         c = list(contig)
         if len(r) == 0:
             match len(c):
                 case 0:
-                    result = 1
+                    return 1
                 case 1:
-                    result = 1 if c[0] == 0 else 0
+                    return 1 if c[0] == 0 else 0
                 case _:
-                    result = 0
+                    return 0
         else:
             head = r.pop(0)
             match head:
                 case '?':
-                    one = self.solve(tuple(['#'] + r), tuple(c))
-                    two = self.solve(tuple(['.'] + r), tuple(c))
-                    result = one + two
+                    return self.solve(tuple(['#'] + r), tuple(c)) + self.solve(tuple(['.'] + r), tuple(c))
                 case '#':
                     if len(contig) == 0:
-                        result = 0
+                        return 0
                     else:
                         head_contig = c.pop(0)
                         head_contig -= 1
@@ -50,27 +47,26 @@ class Day12(Day):
                             r.pop(0)
                             head_contig -= 1
                         if len(r) == 0:
-                            result = 1 if head_contig == 0 and len(c) == 0 else 0
+                            return 1 if head_contig == 0 and len(c) == 0 else 0
                         elif head_contig > 0:
                             if r[0] == '.':
-                                result = 0
+                                return 0
                             else:
-                                result = self.solve(tuple(r), tuple(c))
+                                return self.solve(tuple(r), tuple(c))
                         elif head_contig == 0:
                             if r[0] == '?':
                                 r[0] = '.'
                             if r[0] == '.':
-                                result = self.solve(tuple(r), tuple(c))
+                                return self.solve(tuple(r), tuple(c))
                             else:
-                                result = 0
+                                return 0
                         else:
-                            result = 0
+                            return 0
                 case '.':
                     if len(c) > 0:
-                        result = self.solve(tuple(r), tuple(c))
+                        return self.solve(tuple(r), tuple(c))
                     else:
-                        result = all(x != '#' for x in r)
-        return result
+                        return all(x != '#' for x in r)
 
     def part01(self):
         text = super()._part01_input()
