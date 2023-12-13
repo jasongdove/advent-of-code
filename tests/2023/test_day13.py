@@ -13,4 +13,5 @@ class TestDay13(unittest.TestCase):
 
     def test_part02(self):
         p2 = self.day.part02()
-        self.assertEqual(p2, 0)
+        # 36126 => too low
+        self.assertEqual(p2, 38063)
