@@ -98,6 +98,23 @@ def print_map(the_map, visited):
         print(to_print)
 
 
+def energize_count(beam: Beam, the_map):
+    beams = deque([beam])
+    visited = set()
+    visited_c = set()
+    while any(beams):
+        beam = beams.popleft()
+        to_q = beam.tick(the_map)
+
+        for q in to_q:
+            if q not in visited:
+                visited.add(q)
+                visited_c.add(q.as_coord())
+                beams.append(q)
+
+    return len(visited_c)
+
+
 class Day16(Day):
     def __init__(self):
         super().__init__(2023, 16)
@@ -105,21 +122,55 @@ class Day16(Day):
     def part01(self):
         text = super()._part01_input()
         the_map = [[c for c in line] for line in text.splitlines()]
-        beams = deque([Beam(0, -1, 1, 0)])
-        visited = set()
-        visited_c = set()
-        while any(beams):
-            beam = beams.popleft()
-            to_q = beam.tick(the_map)
-
-            for q in to_q:
-                if q not in visited:
-                    visited.add(q)
-                    visited_c.add(q.as_coord())
-                    beams.append(q)
-
-        return len(visited_c)
+        return energize_count(Beam(0, -1, 1, 0), the_map)
 
     def part02(self):
         text = super()._part01_input()
-        return 0
+        the_map = [[c for c in line] for line in text.splitlines()]
+        start_beams = [
+            # top left right
+            Beam(0, -1, 1, 0),
+            # top left down
+            Beam(-1, 0, 0, 1),
+
+            # top right left
+            Beam(0, len(the_map[0]), -1, 0),
+            # top right down
+            Beam(-1, len(the_map[0]) - 1, 0, 1),
+
+            # bottom right left
+            Beam(len(the_map) - 1, len(the_map[0]), -1, 0),
+            # bottom right up
+            Beam(len(the_map), len(the_map[0]) - 1, 0, -1),
+
+            # bottom left right
+            Beam(len(the_map) - 1, -1, 1, 0),
+            # bottom left up
+            Beam(len(the_map), 0, 0, -1),
+        ]
+
+        # top down
+        for col in range(1, len(the_map[0]) - 1):
+            start_beams.append(Beam(-1, col, 0, 1))
+
+        # right left
+        for row in range(1, len(the_map) - 1):
+            start_beams.append(Beam(row, len(the_map), -1, 0))
+
+        # bottom up
+        for col in range(1, len(the_map[0]) - 1):
+            start_beams.append(Beam(len(the_map), col, 0, -1))
+
+        # left right
+        for row in range(1, len(the_map) - 1):
+            start_beams.append(Beam(row, -1, 1, 0))
+
+        max_energize = 0
+
+        for beam in start_beams:
+            max_energize = max(max_energize, energize_count(beam, the_map))
+
+        return max_energize
+
+
+
