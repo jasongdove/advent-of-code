@@ -2,6 +2,7 @@ from __future__ import annotations
 from collections import deque
 
 import re
+import math
 
 from adventofcode import Day
 
@@ -61,7 +62,7 @@ class FlipFlop(Module):
 class Conjunction(Module):
     def __init__(self, name: str, destinations: list[str]):
         super().__init__(name, destinations)
-        self.mem = {}
+        self.mem: dict[str, bool] = {}
 
     def pulse(self, high: bool, source: str) -> list[Pulse]:
         result = []
@@ -86,8 +87,7 @@ class Day20(Day):
         super().__init__(2023, 20)
         self.reg = re.compile(r'([%&\w]+)\s->\s(\w+.*)+')
 
-    def part01(self):
-        text = super()._part01_input()
+    def build_modules(self, text: str) -> dict[str, Module]:
         modules: dict[str, Module] = {}
 
         for line in text.splitlines():
@@ -108,8 +108,6 @@ class Day20(Day):
             elif module == 'broadcaster':
                 modules[module] = Broadcast(module, destinations)
 
-        conjunction_names = [m.name for m in modules.values() if isinstance(m, Conjunction)]
-
         to_add = set()
         for m in modules.values():
             for destination in m.destinations:
@@ -123,6 +121,30 @@ class Day20(Day):
         for name in to_add:
             modules[name] = Output(name)
 
+        return modules
+
+    @staticmethod
+    def find_cycle_length(target: str, modules: dict[str, Module]) -> int:
+        target_module = modules[target]
+        inputs = set()
+        i = 0
+        while True:
+            q = deque([Pulse('btn', 'broadcaster', False)])
+            i += 1
+            while len(q) > 0:
+                pulse = q.popleft()
+                mod = modules[pulse.dest]
+                next_pulse = mod.pulse(pulse.high, pulse.source)
+                q.extend(next_pulse)
+                if mod == target_module and pulse.high:
+                    inputs.add(i)
+                    if len(inputs) == 4:
+                        return math.lcm(*inputs)
+
+    def part01(self):
+        text = super()._part01_input()
+        modules = self.build_modules(text)
+
         low_count = 0
         high_count = 0
 
@@ -133,15 +155,17 @@ class Day20(Day):
                 low_count += 1 if not pulse.high else 0
                 high_count += 1 if pulse.high else 0
                 q.extend(modules[pulse.dest].pulse(pulse.high, pulse.source))
-                # print(f'pulse: {pulse}')
-                # for module in modules.values():
-                #     print(f'  {module}')
-                # print(f'  low pulses: {low_count}')
-                # print(f'  high pulses: {high_count}')
-                # print()
 
         return low_count * high_count
 
     def part02(self):
         text = super()._part01_input()
-        return 0
+        modules = self.build_modules(text)
+
+        rx_parent = 'rx'
+        for module in modules.values():
+            if 'rx' in module.destinations:
+                if isinstance(module, Conjunction):
+                    rx_parent = module.name
+
+        return Day20.find_cycle_length(rx_parent, modules)
