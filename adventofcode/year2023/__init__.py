@@ -15,3 +15,4 @@ from .day15 import Day15
 from .day16 import Day16
 from .day18 import Day18
 from .day19 import Day19
+from .day20 import Day20
