@@ -5,7 +5,7 @@ from adventofcode import Day
 
 
 class Brick:
-    def __init__(self, letter: chr, x: int, y: int, z: int, x2: int, y2: int, z2: int):
+    def __init__(self, letter: int, x: int, y: int, z: int, x2: int, y2: int, z2: int):
         self.letter = letter
         self.x = x
         self.y = y
@@ -51,20 +51,21 @@ class Day22(Day):
         self.reg = re.compile(r'(\d+),(\d+),(\d+)~(\d+),(\d+),(\d+)')
 
     def part01(self):
+        return 0
         text = super()._part01_input()
         bricks = []
-        letter = 'A'
+        count = 1
         for line in text.splitlines():
             match = self.reg.match(line)
             bricks.append(Brick(
-                letter,
+                count,
                 int(match.group(1)),
                 int(match.group(2)),
                 int(match.group(3)),
                 int(match.group(4)),
                 int(match.group(5)),
                 int(match.group(6))))
-            letter = chr(ord(letter) + 1)
+            count = count + 1
 
         falling_bricks = []
         resting_bricks = []
@@ -115,4 +116,64 @@ class Day22(Day):
 
     def part02(self):
         text = super()._part01_input()
-        return 0
+        bricks = []
+        count = 1
+        for line in text.splitlines():
+            match = self.reg.match(line)
+            bricks.append(Brick(
+                count,
+                int(match.group(1)),
+                int(match.group(2)),
+                int(match.group(3)),
+                int(match.group(4)),
+                int(match.group(5)),
+                int(match.group(6))))
+            count = count + 1
+
+        falling_bricks = []
+        resting_bricks = []
+        resting_points = []
+
+        for brick in bricks:
+            heapq.heappush(falling_bricks, brick)
+            # print(brick)
+
+        while len(falling_bricks) > 0:
+            brick = heapq.heappop(falling_bricks)
+            if not brick.fall(resting_points):
+                resting_bricks.append(brick)
+                resting_points.extend(brick.points())
+            else:
+                heapq.heappush(falling_bricks, brick)
+
+        # print()
+        for brick in bricks:
+            heapq.heappush(falling_bricks, brick)
+            # print(brick)
+
+        total = 0
+
+        print(f'to test: {len(bricks)}')
+        for i in range(len(bricks)):
+            print(f'testing: {i}')
+            falling_bricks = []
+            resting_points = []
+            for j in range(len(bricks)):
+                if i != j:
+                    heapq.heappush(falling_bricks, bricks[j].copy())
+            #print(f'falling_bricks: {list(map(lambda b: b.letter, falling_bricks))}')
+            fall_status = {}
+            while len(falling_bricks) > 0:
+                #print(f'  resting points: {resting_points}')
+                brick = heapq.heappop(falling_bricks)
+                #print(f'  testing brick: {brick}')
+                if not brick.fall(resting_points):
+                    #print(f'    not fall')
+                    resting_points.extend(brick.points())
+                else:
+                    #print(f'    fall!')
+                    fall_status[brick.letter] = True
+                    heapq.heappush(falling_bricks, brick)
+            total += len(fall_status)
+
+        return total
