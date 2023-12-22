@@ -24,8 +24,8 @@ class Brick:
         result = set()
         for x in range(self.x, self.x2 + 1):
             for y in range(self.y, self.y2 + 1):
-                for z in range(self.z, self.z2 + 1):
-                    result.add((x, y, z + dz))
+                result.add((x, y, self.z + dz))
+                result.add((x, y, self.z2 + dz))
         return result
 
     def fall(self, resting_points: set[tuple[int, int, int]]) -> bool:
@@ -36,12 +36,11 @@ class Brick:
         return result
 
     def can_fall(self, resting_points: set[tuple[int, int, int]]) -> bool:
-        for z in range(self.z, self.z2 + 1):
-            for x in range(self.x, self.x2 + 1):
-                for y in range(self.y, self.y2 + 1):
-                    test_z = z - 1
-                    if test_z == 0 or (x, y, test_z) in resting_points:
-                        return False
+        for x in range(self.x, self.x2 + 1):
+            for y in range(self.y, self.y2 + 1):
+                test_z = self.z - 1
+                if test_z == 0 or (x, y, test_z) in resting_points:
+                    return False
         return True
 
     def __lt__(self, other):
